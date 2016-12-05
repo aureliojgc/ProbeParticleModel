@@ -7,6 +7,7 @@ There are two versions of the code -
 
 * currently developed Python/C++ version in PyProbe  (branch *PPSTM* ); 
   * to get quick esence of the AFM model you can also try web interface hostet here: http://nanosurf.fzu.cz/ppr/
+  * some documentation at http://nanosurf.fzu.cz/wiki/doku.php?id=probe_particle_stm
 
 works in python2.7, matplotlibm, cpp4.4.8, (for some parts ASE and GPAW are imporatant)
 

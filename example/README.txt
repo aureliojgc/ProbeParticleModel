@@ -1,5 +1,5 @@
 #HOW TO RUN PPSTM simulations:
-#See doc, or:
+#See doc, or: http://nanosurf.fzu.cz/wiki/doku.php?id=probe_particle_stm
 
 python PPSTM/gen_LJFF.py -i crazy_mol.xyz # see params.ini &/or AFM documentation for initial settings
 # now LJ Force-field is made
