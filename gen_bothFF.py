@@ -27,7 +27,7 @@ parser.add_option( "-i", "--input", action="store", type="string", help="format 
 parser.add_option( "-g", "--geometry", action="store", type="string", help="format of input file")
 parser.add_option( "-t", "--tip", action="store", type="string", help="tip model (multipole)", default='s')
 parser.add_option( "-w", "--sigma", action="store", type="float",  help="gaussian width for convolution in Electrostatics [Angstroem]", default=0.7)
-parser.add_option( "--noLJ", action="store_false",  help="noLJ forcefield", default=True)
+parser.add_option( "-E", "--energy", action="store_true",  help="pbc False", default=False)
 parser.add_option( "--noPBC", action="store_false",  help="noLJ forcefield", default=True)
 
 (options, args) = parser.parse_args()
@@ -42,10 +42,13 @@ is_xyz  = options.input.lower().endswith(".xyz")
 is_cube = options.input.lower().endswith(".cube")
 is_xsf  = options.input.lower().endswith(".xsf")
 
-gs_xyz  = options.input.lower().endswith(".xyz")
-gs_cube = options.input.lower().endswith(".cube")
-gs_xsf  = options.input.lower().endswith(".xsf")
+gs_xyz  = options.geometry.lower().endswith(".xyz")
+gs_cube = options.geometry.lower().endswith(".cube")
+gs_xsf  = options.geometry.lower().endswith(".xsf")
 
+print "is:" , is_xyz, is_cube, is_xsf
+print "gs:" , gs_xyz, gs_cube, gs_xsf
+#exit()
 
 print " >> OVEWRITING SETTINGS by params.ini  "
 PPU.loadParams( 'params.ini' )
@@ -78,51 +81,54 @@ print " computing convolution with tip by FFT "
 Fel_x,Fel_y,Fel_z = fFFT.potential2forces(V, lvec, nDim, rho=rho, sigma = options.sigma, multipole = multipole)
 Fel = GU.packVecGrid(Fel_x,Fel_y,Fel_z)
 
+print " shape of El. field", Fel.shape
 print " saving electrostatic forcefiled "
 
 GU.saveVecFieldNpy( 'FFel', Fel, lvec)
 
 del Fel_x,Fel_y,Fel_z,V, Fel
 
-if (options.noLJ):
-	print "Computing LJ potential with parameters from electrostatic grid"
-	#lvec from Electrostatic !!!!
-	PPU.params['gridA'] =    lvec[ 1,:  ].copy() 
-	PPU.params['gridB'] =    lvec[ 2,:  ].copy()
-	PPU.params['gridC'] =    lvec[ 3,:  ].copy()
-	PPU.params['gridN'] = np.array([nDim[2],nDim[1],nDim[0]])
+if (options.geometry!=None):
+    print "--- Compute Lennard-Jones Force-filed ---"
+    PPU.params['gridN'] = nDim
+    PPU.params['gridA'] = lvec[1]
+    PPU.params['gridB'] = lvec[2]
+    PPU.params['gridC'] = lvec[3]
+    
+    if(gs_xyz):
+    	atoms = basUtils.loadAtoms(options.geometry, elements.ELEMENT_DICT )
+    elif(gs_cube):
+    	atoms = basUtils.loadAtomsCUBE(options.geometry,elements.ELEMENT_DICT)
+    	lvec  = basUtils.loadCellCUBE(options.geometry)
+    	nDim  = basUtils.loadNCUBE(options.geometry)
+    #	PPU.params['gridN'] = nDim
+    #	PPU.params['gridA'] = lvec[1]
+    #	PPU.params['gridB'] = lvec[2]
+    #	PPU.params['gridC'] = lvec[3]
+    elif(gs_xsf):
+    	atoms, nDim, lvec = basUtils.loadXSFGeom( options.geometry )
+    #	PPU.params['gridN'] = nDim
+    #	PPU.params['gridA'] = lvec[1]
+    #	PPU.params['gridB'] = lvec[2]
+    #	PPU.params['gridC'] = lvec[3]
+    else:
+    	sys.exit("ERROR!!! Unknown format of geometry system. Supported formats: .xyz, .cube \n\n")
+    #print "atoms",atoms
+    FFparams=None
+    if os.path.isfile( 'atomtypes.ini' ):
+    	print ">> LOADING LOCAL atomtypes.ini"  
+    	FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
+    iZs,Rs,Qs      = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC )
+    FFLJ, VLJ      = PPH.computeLJ( Rs, iZs, FFLJ=None, FFparams=FFparams, Vpot=options.energy )
+    print " shape of Lj. field", FFLJ.shape
 
-	if options.geometry==None:
-		if(is_cube):
-			atoms = basUtils.loadAtomsCUBE(options.input,elements.ELEMENT_DICT)
-		elif(is_xsf):
-			atoms, nDim, lvec = basUtils.loadXSFGeom( options.input )
-		else:
-			sys.exit("ERROR!!! Unknown format of geometry system. Supported formats: .xyz, .cube \n\n")
-	else:
-		if not (gs_xyz or gs_cube or gs_xsf):
-			sys.exit("ERROR!!! Unknown format of the geometry input file\n\n"+HELP_MSG)
-
-		print "--- Compute Lennard-Jones Force-field ---"
-		if(gs_xyz):
-				atoms = basUtils.loadAtoms(options.geometry, elements.ELEMENT_DICT )
-		elif(gs_cube):
-				atoms = basUtils.loadAtomsCUBE(options.geometry, elements.ELEMENT_DICT)
-		elif(gs_xsf):
-			atoms, nDim, lvec = basUtils.loadXSFGeom( options.input )
-		else:
-			sys.exit("ERROR!!! Unknown format of geometry system. Supported formats: .xyz, .cube \n\n")
-
-		FFparams=None
-		if os.path.isfile( 'atomtypes.ini' ):
-				print ">> LOADING LOCAL atomtypes.ini"  
-				FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
-		iZs,Rs,Qs = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC )
-		FFLJ      = PPH.computeLJ( Rs, iZs, FFLJ=None, FFparams=FFparams )
-
-		GU.limit_vec_field( FFLJ, Fmax=10.0 ) # remove too large valuesl; keeps the same direction; good for visualization 
-
-	print "--- Save  ---"
-	GU.saveVecFieldNpy( 'FFLJ', FFLJ, lvec)
+    
+    GU.limit_vec_field( FFLJ, Fmax=10.0 ) # remove too large valuesl; keeps the same direction; good for visualization 
+    
+    print "--- Save  ---"
+    GU.saveVecFieldNpy( 'FFLJ', FFLJ, lvec)
+    if options.energy :
+    	Vmax = 10.0; VLJ[ VLJ>Vmax ] = Vmax
+    	GU.saveXSF( 'VLJ.xsf', VLJ, lvec)
 
 print "--- Force-field(s) saved "
