@@ -90,7 +90,7 @@ del Fel_x,Fel_y,Fel_z,V, Fel
 
 if (options.geometry!=None):
     print "--- Compute Lennard-Jones Force-filed ---"
-    PPU.params['gridN'] = nDim
+    PPU.params['gridN'] = [nDim[2],nDim[1],nDim[0]]
     PPU.params['gridA'] = lvec[1]
     PPU.params['gridB'] = lvec[2]
     PPU.params['gridC'] = lvec[3]
