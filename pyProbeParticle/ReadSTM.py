@@ -56,6 +56,13 @@ def	read_AIMS_all(name = 'KS_eigenvectors.band_1.kpt_1.out', geom='geometry.in',
 	else:
 		#print "NOT! cutting attoms"
 		Ratin = slab.get_positions()
+	#Debug:
+	print 'DEBUG atoms and their symbols', lower_atoms
+	i_coef = 0;
+	for j in lower_atoms:
+		print j, "atomic number", at_num[j], "lower_coefs:", lower_coefs[i_coef]
+		i_coef +=1
+	#exit()
 	if (pbc != ((0,0)or(0.,0.))):
 		print "Applying PBC"
 		atoms = Atoms('H%d' % len(Ratin), positions=Ratin)
@@ -109,13 +116,19 @@ def	read_AIMS_all(name = 'KS_eigenvectors.band_1.kpt_1.out', geom='geometry.in',
 	if (orbs == 'sp'):
 		orb_pos=np.zeros((num_at,4), dtype=np.int)
 		orb_sign=np.zeros((num_at,4), dtype=np.int)
+	else: # (orbs == 'spd'):
+		orb_pos=np.zeros((num_at,9), dtype=np.int)
+		orb_sign=np.zeros((num_at,9), dtype=np.int)
 	orb_pos += -1
 	el = elements.ELEMENTS
 	for j in range(num_at):
 		Z = at_num[j];
 		per = el[Z][2]
 		temp=int((np.mod(2,2)-0.5)*2)	# phase of radial function in long distance for l=0: if n even - +1, if odd - -1
-		orb_sign[j]=[temp,-1*temp,-1*temp,temp]		# {1, 1, 1, -1};(*Dont change, means - +s, +py +pz -px*) but l=1 has opposite phase than l=0 ==>  sign[s]*{1, -1, -1, 1};
+		if (orbs == 'sp'):
+			orb_sign[j]=[temp,-1*temp,-1*temp,temp]		# {1, 1, 1, -1};(*Dont change, means - +s, +py +pz -px*) but l=1 has opposite phase than l=0 ==>  sign[s]*{1, -1, -1, 1};
+		else: # (orbs == 'spd'):
+			orb_sign[j]=[temp,-1*temp,-1*temp,temp]		# {1, 1, 1, -1};(*Dont change, means - +s, +py +pz -px*) but l=1 has opposite phase than l=0 ==>  sign[s]*{1, -1, -1, 1};
 	for i in range(len(tmp)):
 		for j in range(num_at):
 			Z = at_num[j];
@@ -283,7 +296,7 @@ def	read_FIREBALL_all(name = 'phi_' , geom='answer.bas', fermi=None, orbs = 'sp'
 	read_FIREBALL_all(name = 'phi_' , geom='answer.bas', fermi=None, orbs = 'sp', pbc=(1,1), imaginary = False, cut_min=-15.0, cut_max=5.0, cut_at=-1, lower_atoms=[], lower_coefs=[]):
 	read coffecients and eigen numbers from Fireball made (iwrtcoefs = -2) files phik_0001_s.dat, phik_0001_py.dat ....
 	fermi - If None the Fermi Level from the Fireball calculations (in case of molecule and visualising some molecular orbitals it can be move to their energy by putting there real value)
-	orbs = 'sp' read only sp structure of valence orbitals (spd works, but calculator is done for sp only for now)
+	orbs = 'sp' read only sp structure of valence orbitals or 'spd' orbitals of the sample
 	pbc (1,1) - means 3 times 3 cell around the original, (0,0) cluster, (0.5,0.5) 2x2 cell etc.
 	imaginary = False (other options for future k-points dependency
 	cut_min = -15.0, cut_max = 5.0 - cut off states(=mol  orbitals) bellow cut_min and above cut_max; energy in eV
@@ -390,6 +403,12 @@ def	read_FIREBALL_all(name = 'phi_' , geom='answer.bas', fermi=None, orbs = 'sp'
 			coef[:,0,6] = np.loadtxt(name+'dz2.dat',skiprows=1,usecols=tuple(xrange(1, num_at*2+1, 2)) )
 			coef[:,0,7] = np.loadtxt(name+'dxz.dat',skiprows=1,usecols=tuple(xrange(1, num_at*2+1, 2)) )
 			coef[:,0,8] = np.loadtxt(name+'dx2y2.dat',skiprows=1,usecols=tuple(xrange(1, num_at*2+1, 2)) )
+		if (lower_atoms != []):
+			print 'lowering atoms hoppings for atoms:', lower_atoms
+			i_coef = 0;
+			for j in lower_atoms:
+				coef[:,j,:] *= lower_coefs[i_coef]
+				i_coef +=1
 		coeff = coef.flatten() #xy yz z2 xz x2-y2
 		coeffs = coeff.reshape((n_bands,num_at*9))
 		if (cut_at != -1):

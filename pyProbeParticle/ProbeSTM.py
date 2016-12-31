@@ -30,8 +30,8 @@ def dIdV( V, WF, eta ,eig, R, Rat, coes, orbs='sp', s=0.0, px =0.0, py=0.0, pz=0
 	s and/or px and/or py and/or pz orbitals at the PP
 	unification of all the predefined dI/dV procedures from C++, you can choose, whatever PP orbital you want
 	'''
-	#assert ((orbs == 'sp')or(orbs == 'spd')), "sorry I can't do different orbitals" 
-	assert (orbs == 'sp'), "sorry I can't do different orbitals" 	
+	assert ((orbs == 'sp')or(orbs == 'spd')), "sorry I can't do different orbitals" 
+	#assert (orbs == 'sp'), "sorry I can't do different orbitals" 	
 	assert ((s > 0.0)or(px > 0.0)or(py > 0.0)or(pz > 0.0)or(dz2 > 0.0)or(dxz > 0.0)or(dyz > 0.0)), "all tip orbitals are zero"
 	assert ((s >= 0.0)and(px >= 0.0)and(py >= 0.0)and(pz >= 0.0)and(dz2 >= 0.0)and(dxz >= 0.0)and(dyz >= 0.0)), "you cannot have negative current"
 	tip = np.zeros((9))
@@ -43,7 +43,10 @@ def dIdV( V, WF, eta ,eig, R, Rat, coes, orbs='sp', s=0.0, px =0.0, py=0.0, pz=0
 	tip[6] = dz2
 	tip[7] = dxz
 	if (orbs == 'sp'):
-		cur = dIdV_sp_sp( V, WF, eta, eig, R, Rat, coes, tip)
+		orb_t = 4
+	else: # (orbs == 'spd'):
+		orb_t = 9
+	cur = dIdV_sp_sp( V, WF, eta, eig, R, Rat, coes, tip, orb_t )
 	return cur;
 
 def dIdV_tilt( V, WF, eta ,eig, R, R0, Rat, coes, orbs='sp', pz=0.0, pxy =0.0, dz2=0.0, dxyz=0.0, len_R=4.0, al=1.0):
@@ -113,8 +116,8 @@ def IETS_simple( V, WF, eta ,eig, R, Rat, coes, orbs='sp', s=0.0, px =0.0, py=0.
 	Amp=0.02 amplitude of vibrations in x and y directions
 	IETS = (dI/dV)/dx+(dI/dV)/dy
 	'''
-	#assert ((orbs == 'sp')or(orbs == 'spd')), "sorry I can't do different orbitals" 
-	assert (orbs == 'sp'), "sorry I can't do different orbitals" 	
+	assert ((orbs == 'sp')or(orbs == 'spd')), "sorry I can't do different orbitals" 
+	#assert (orbs == 'sp'), "sorry I can't do different orbitals" 	
 	assert ((s > 0.0)or(px > 0.0)or(py > 0.0)or(pz > 0.0)or(dz2 > 0.0)or(dxz > 0.0)or(dyz > 0.0)), "all tip orbitals are zero"
 	assert ((s >= 0.0)and(px >= 0.0)and(py >= 0.0)and(pz >= 0.0)and(dz2 >= 0.0)and(dxz >= 0.0)and(dyz >= 0.0)), "you cannot have negative current"
 	print "Not working yet"
@@ -129,7 +132,10 @@ def IETS_simple( V, WF, eta ,eig, R, Rat, coes, orbs='sp', s=0.0, px =0.0, py=0.
 	tip[6] = dz2
 	tip[7] = dxz
 	if (orbs == 'sp'):
-		cur1 = IETS_sp_sp( V, WF, eta, eig, R, Rat, coes, tip, Amp)
+	    orb_t = 4
+	else: # (orbs == 'spd'):
+	    orb_t = 9
+	cur1 = IETS_sp_sp( V, WF, eta, eig, R, Rat, coes, tip, Amp, orb_t)
 	print "IETS done"
 	return cur1;
 
@@ -157,12 +163,12 @@ array4d = np.ctypeslib.ndpointer(dtype=np.double, ndim=4, flags='CONTIGUOUS')
 # ======== Python warper function for C++ functions
 # ========
 
-#************* sp *************
-# void proc_dIdVspsp( int NoAt, int NoOrb, int Npoints, double V, double WF, double eta, double* eig, double* R_, double* Rat_, double* coesin, double* tip_coes, double* cur)
-lib.proc_dIdVspsp.argtypes = [ c_int, c_int, c_int, c_double, c_double, c_double, array1d, array4d, array2d, array2d, array1d, array1d ]
+#************* sp(d) now as well *************
+# void proc_dIdVspsp(   int const_orb, int NoAt, int NoOrb, int Npoints, double V, double WF, double eta, double* eig, double* R_, double* Rat_, double* coesin, double* tip_coes, double* cur)
+lib.proc_dIdVspsp.argtypes = [ c_int, c_int, c_int, c_int, c_double, c_double, c_double, array1d, array4d, array2d, array2d, array1d, array1d ]
 lib.proc_dIdVspsp.restype  = None
-def dIdV_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes):
-	print "Entering the dI/dV (sp-sp) procedure"
+def dIdV_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes, orb_t):
+	print "Entering the dI/dV ( sp-sp(d) ) procedure"
 	NoAt = len(Rat)
 	NoOrb = len(eig)
 	sh = R.shape
@@ -170,9 +176,9 @@ def dIdV_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes):
 	Npoints = sh[0]*sh[1]*sh[2]	#len(R)/3
 	assert (NoOrb == len(coes)), "Different eigennumbers, than basis"
 	if (len(coes) != 0):
-		assert (NoOrb == len(coes)*len(coes[0])/(4*NoAt)), "Different eigennumbers, than basis"	
+		assert (NoOrb == len(coes)*len(coes[0])/(orb_t*NoAt)), "Different eigennumbers, than basis"	
 	print "We're going to C++"
-	lib.proc_dIdVspsp( NoAt, NoOrb, Npoints, V, WF, eta, eig, R.copy(), Rat, coes, tip_coes, cur_1d)
+	lib.proc_dIdVspsp( orb_t, NoAt, NoOrb, Npoints, V, WF, eta, eig, R.copy(), Rat, coes, tip_coes, cur_1d)
 	print "We're back in Python"
 	return cur_1d.reshape((sh[0],sh[1],sh[2])).copy();
 
@@ -194,10 +200,10 @@ def dIdV_sp_sp_tilt( V, WF, eta ,eig, R, R0, Rat, coes, tip_coes, len_R, al):
 	print "We're back in Python"
 	return cur_1d.reshape((sh[0],sh[1],sh[2])).copy();
 
-# void proc_dIdVspsp( int NoAt, int NoOrb, int Npoints, double V, double WF, double eta, double Amp, double* eig, double* R_, double* Rat_, double* coesin, double* tip_coes, double* cur)
-lib.proc_IETSspsp.argtypes = [ c_int, c_int, c_int, c_double, c_double, c_double, c_double, array1d, array4d, array2d, array2d, array1d, array1d ]
+# void proc_dIdVspsp( int const_orb, int NoAt, int NoOrb, int Npoints, double V, double WF, double eta, double Amp, double* eig, double* R_, double* Rat_, double* coesin, double* tip_coes, double* cur)
+lib.proc_IETSspsp.argtypes = [ c_int, c_int, c_int, c_int, c_double, c_double, c_double, c_double, array1d, array4d, array2d, array2d, array1d, array1d ]
 lib.proc_IETSspsp.restype  = None
-def IETS_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes, Amp):
+def IETS_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes, Amp, orb_t):
 	print "Entering the IETS (sp-sp) procedure"
 	NoAt = len(Rat)
 	NoOrb = len(eig)
@@ -206,9 +212,9 @@ def IETS_sp_sp( V, WF, eta ,eig, R, Rat, coes, tip_coes, Amp):
 	Npoints = sh[0]*sh[1]*sh[2]	#len(R)/3
 	assert (NoOrb == len(coes)), "Different eigennumbers, than basis"
 	if (len(coes) != 0):
-		assert (NoOrb == len(coes)*len(coes[0])/(4*NoAt)), "Different eigennumbers, than basis"	
+		assert (NoOrb == len(coes)*len(coes[0])/(orb_t*NoAt)), "Different eigennumbers, than basis"	
 	print "We're going to C++"
-	lib.proc_IETSspsp( NoAt, NoOrb, Npoints, V, WF, eta, Amp, eig, R.copy(), Rat, coes, tip_coes, cur_1d)
+	lib.proc_IETSspsp( orb_t, NoAt, NoOrb, Npoints, V, WF, eta, Amp, eig, R.copy(), Rat, coes, tip_coes, cur_1d)
 	print "We're back in Python"
 	return cur_1d.reshape((sh[0],sh[1],sh[2])).copy();
 

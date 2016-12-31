@@ -24,17 +24,23 @@ lvs = None
 #lvs = np.array([[15., 0.],[0.,15.]]
 WorkFunction = 5.0 #more or less standart.
 fermi=None	# the Fermi from phid ... .dat file; !!! All energies are relative to Fermi !!!! None -  means: -5.04612664712 eV
-orbs= 'sp'	# only 'sp' works now
-cut_min=-1.0	# HOMO -0.88 bellow the Fermi Level
+orbs= 'sp'	# 'sp' works now, 'spd' works for fireball as well
+cut_min=-1.0	# HOMO -0.88 bellow the Fermi Level, other orbitals cut
 cut_max=+1.0	# LUMO -0.88 above the Fermi Level
 cut_at=-1	# All atoms of the molecule
 eta = 0.01	# very low, to pronounce the single orbitals only
 WF_decay=1.0	# for STM only - how fast the exponential decay fall, with the applied bias ( if 1 - 1:1 correspondence with bias; if 0, it doesn't change)
 nV = 9		# for STM only
+lower_atoms=[]	# No atoms has lowered hopping
+lower_coefs=[]	# Lowering of the hoppings
 
-#eigEn, coefs, Ratin = RS.read_AIMS_all(name = 'KS_eigenvectors_up.band_1.kpt_1.out', geom='geometry.in',fermi=fermi, orbs = 'sp', pbc=pbc, imaginary = False, cut_min=cut_min, cut_max=cut_max, cut_at=cut_at, lower_atoms=[], lower_coefs=[],header=True)
-#eigEn, coefs, Ratin  = RS.read_GPAW_all(name = 'out_LCAO_LDA.gpw', fermi=fermi, orbs = orbs, pbc=pbc, cut_min=cut_min, cut_max=cut_max, cut_at=cut_at, lower_atoms=[], lower_coefs=[]);
-eigEn, coefs, Ratin = RS.read_FIREBALL_all(name = path+'phik_example_', geom=path+'crazy_mol.xyz', fermi=fermi, orbs = orbs, pbc=pbc, cut_min=cut_min, cut_max=cut_max,cut_at=cut_at);
+#eigEn, coefs, Ratin = RS.read_AIMS_all(name = 'KS_eigenvectors_up.band_1.kpt_1.out', geom='geometry.in',fermi=fermi, orbs = 'sp', pbc=pbc,
+#					imaginary = False, cut_min=cut_min, cut_max=cut_max, cut_at=cut_at,
+#					lower_atoms=lower_atoms, lower_coefs=lower_coefs,header=True) #header - for newest version of aims with AIMS UUID at 
+#eigEn, coefs, Ratin  = RS.read_GPAW_all(name = 'out_LCAO_LDA.gpw', fermi=fermi, orbs = orbs, pbc=pbc,
+#					cut_min=cut_min, cut_max=cut_max, cut_at=cut_at, lower_atoms=lower_atoms, lower_coefs=lower_coefs);
+eigEn, coefs, Ratin = RS.read_FIREBALL_all(name = path+'phik_example_', geom=path+'crazy_mol.xyz', fermi=fermi, orbs = orbs, pbc=pbc,
+					    cut_min=cut_min, cut_max=cut_max,cut_at=cut_at, lower_atoms=lower_atoms, lower_coefs=lower_coefs);
 
 tip_r1, lvec = GU.loadVecFieldNpy( path_pos+"PPpos" )
 
@@ -63,14 +69,14 @@ for WorkFunction in [WorkFunction]:
     i=0;
     for V in Voltages:
 	for eta in [eta]:
-	    current0 = PS.dIdV( V, WorkFunction, eta, eigEn,  tip_r2 , Ratin, coefs, orbs=orbs , s=1.0, px=0.0, py=0.0, pz = 0.0)
-	    current1 = PS.dIdV( V, WorkFunction, eta, eigEn,  tip_r1 , Ratin, coefs, orbs=orbs , s=1.0, px=0.0, py=0.0, pz = 0.0)
-	    current2 = PS.dIdV( V, WorkFunction, eta, eigEn,  tip_r1 , Ratin, coefs, orbs=orbs , s=0.0, px=1.0, py=1.0, pz = 0.0)
-	    current3 = PS.dIdV_tilt( V, WorkFunction, eta, eigEn,  tip_r1,  tip_r2 , Ratin, coefs, orbs=orbs , pz = 1.0, al =1.0)
-	    current4 = PS.dIdV_tilt( V, WorkFunction, eta, eigEn,  tip_r1,  tip_r2 , Ratin, coefs, orbs=orbs , dxyz = 1.0, al =1.0)
-	    current5 = PS.STM( V, nV, WorkFunction, eta, eigEn,  tip_r1 , Ratin, coefs, orbs=orbs , px=0.5, py=0.5, WF_decay=WF_decay)
+	    current0 = PS.dIdV( V, WorkFunction, eta, eigEn, tip_r2, Ratin, coefs, orbs=orbs, s=1.0, px=0.0, py=0.0, pz = 0.0)
+	    current1 = PS.dIdV( V, WorkFunction, eta, eigEn, tip_r1, Ratin, coefs, orbs=orbs, s=1.0, px=0.0, py=0.0, pz = 0.0)
+	    current2 = PS.dIdV( V, WorkFunction, eta, eigEn, tip_r1, Ratin, coefs, orbs=orbs, s=0.0, px=1.0, py=1.0, pz = 0.0)
+	    current3 = PS.dIdV_tilt( V, WorkFunction, eta, eigEn, tip_r1, tip_r2, Ratin, coefs, orbs=orbs, pz = 1.0, al =1.0)
+	    current4 = PS.dIdV_tilt( V, WorkFunction, eta, eigEn, tip_r1, tip_r2, Ratin, coefs, orbs=orbs, dxyz = 1.0, al =1.0)
+	    current5 = PS.STM( V, nV, WorkFunction, eta, eigEn, tip_r1, Ratin, coefs, orbs=orbs, px=0.5, py=0.5, WF_decay=WF_decay)
 	    # next procedure is under development
-	    current6 = PS.IETS_simple( V, WorkFunction, eta ,eigEn, tip_r1 , Ratin, coefs, orbs=orbs , s=0.0, px =0.5, py=0.5, pz=0.0, dxz=0.0, dyz=0.0, dz2=0.0, Amp=0.02)
+	    current6 = PS.IETS_simple( V, WorkFunction, eta, eigEn, tip_r1, Ratin, coefs, orbs=orbs, s=0.0, px =0.5, py=0.5, pz=0.0, dxz=0.0, dyz=0.0, dz2=0.0, Amp=0.02)
 	    print " plotting "
 	
 	    for k in range(df.shape[0]):
