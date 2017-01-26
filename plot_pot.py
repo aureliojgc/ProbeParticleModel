@@ -17,13 +17,13 @@ print lvec
 
 namez = 'z_el_pot'
 
-for k in range(df.shape[0]):
+for k in range(0,df.shape[0],10):
     dff = np.array(df[k,:,:]).copy()
     kk = k*lvec[3,2]/df.shape[0]
     print kk
     name_file=namez+'_'+str(kk)+'.dat'
     # ploting part here:
-    plt.figure( figsize=( lvec[1,0]/10 , lvec[2,1]/10 ) )
+    plt.figure( figsize=( lvec[1,0]/1 , lvec[2,1]/1 ) )
     plt.imshow( dff, origin='image')#, extent=extent , cmap='gray')
     plt.xlabel(r' Tip_x $\AA$')
     plt.ylabel(r' Tip_y $\AA$')

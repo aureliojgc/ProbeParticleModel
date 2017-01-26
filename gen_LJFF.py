@@ -12,6 +12,8 @@ import pyProbeParticle.GridUtils      as GU
 #import pyProbeParticle.core          as PPC
 import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.fieldFFT       as fFFT
+import pyProbeParticle.cpp_utils      as cpp_utils
+
 
 HELP_MSG="""Use this program in the following way:
 %s -i <filename> 
@@ -56,7 +58,7 @@ lvec[ 3,:  ] =    PPU.params['gridC'].copy()
 
 print "--- Compute Lennard-Jones Force-filed ---"
 if(is_xyz):
-	atoms = basUtils.loadAtoms(options.input, elements.ELEMENT_DICT )
+	atoms = basUtils.loadAtoms(options.input)#, elements.ELEMENT_DICT )
 elif(is_cube):
 	atoms = basUtils.loadAtomsCUBE(options.input,elements.ELEMENT_DICT)
 	lvec  = basUtils.loadCellCUBE(options.input)
@@ -81,7 +83,12 @@ FFparams=None
 if os.path.isfile( 'atomtypes.ini' ):
 	print ">> LOADING LOCAL atomtypes.ini"  
 	FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
-iZs,Rs,Qs      = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC )
+else:
+	FFparams = PPU.loadSpecies( cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini' )
+
+print "FFparams", FFparams
+print
+iZs,Rs,Qs      = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC, FFparams=FFparams )
 FFLJ, VLJ      = PPH.computeLJ( Rs, iZs, FFLJ=None, FFparams=FFparams, Vpot=options.energy )
 
 GU.limit_vec_field( FFLJ, Fmax=10.0 ) # remove too large valuesl; keeps the same direction; good for visualization 

@@ -90,8 +90,11 @@ for iq,Q in enumerate( Qs ):
 		if not os.path.exists( dirname ):
 			os.makedirs( dirname )
 		PPC.setTip( kSpring = np.array((K,K,0.0))/-PPU.eVA_Nm )
-		fzs,PPpos = PPH.relaxedScan3D( xTips, yTips, zTips )
+		fs, PPpos, tmp = PPH.relaxedScan3D( xTips, yTips, zTips )
+		fzs = fs[:,:,:,2].copy()
+		del fs, tmp;
 		GU.saveNpy( dirname+'/OutFz', fzs, lvecScan)
+		GU.saveXSF( dirname+'/OutFz.xsf', fzs, lvecScan)
 
 #                print "SHAPE", PPpos.shape, xTips.shape, yTips.shape, zTips.shape
                 if opt_dict['disp']:

@@ -51,17 +51,17 @@ interpolate_gridCoord               = lib.interpolate_gridCoord
 #	void interpolateLine_gridCoord( int n, Vec3d * p1, Vec3d * p2, double * data, double * out )
 lib.interpolateLine_gridCoord.argtypes = [ c_int, array1d, array1d, array3d, array1d ]
 lib.interpolateLine_gridCoord.restype  = None
-interpolateLine_gridCoord                   = lib.interpolateLine_gridCoord
+#interpolateLine_gridCoord                   = lib.interpolateLine_gridCoord
 
 #	void interpolateQuad_gridCoord( int * nij, Vec3d * p00, Vec3d * p01, Vec3d * p10, Vec3d * p11, double * data, double * out )
 lib.interpolateQuad_gridCoord.argtypes = [ array1i, array1d, array1d, array1d, array1d, array3d, array2d ]
 lib.interpolateQuad_gridCoord.restype  = None
-interpolateQuad_gridCoord              = lib.interpolateQuad_gridCoord
+#interpolateQuad_gridCoord              = lib.interpolateQuad_gridCoord
 
-#	void interpolate_cartesian( int n, Vec3d * pos_list, double * data )
-lib.interpolate_cartesian.argtypes  = [ c_int, array2d, array3d, array1d  ]
+#	void interpolate_cartesian( int n, Vec3d * pos_list, double * data, double * out )
+lib.interpolate_cartesian.argtypes  = [ c_int, array4d, array3d, array3d  ]
 lib.interpolate_cartesian.restype   = None
-interpolate_cartesian               = lib.interpolate_cartesian
+#interpolate_cartesian               = lib.interpolate_cartesian
 
 #	void setGridCell( double * cell )
 lib.setGridCell.argtypes  = [array2d]
@@ -77,17 +77,30 @@ def interpolateLine( F, p1, p2, sz=500, cartesian=False ):
 	result = np.zeros( sz )
 	p00 = np.array ( p1, dtype='float64' )
 	p01 = np.array ( p2, dtype='float64' )
-	interpolateLine_gridCoord( sz, p00, p01, F, result )
+	setGridN( np.array(F.shape, dtype='int32' ) )
+	lib.interpolateLine_gridCoord( sz, p00, p01, F, result )
 	return result
 
 def interpolateQuad( F, p00, p01, p10, p11, sz=(500,500) ):
 	result = np.zeros( sz )
-	npxy   = npxy = np.array( sz, dtype='int32' )
+	npxy   = np.array( sz, dtype='int32' )
 	p00 = np.array ( p00, dtype='float64' )
 	p01 = np.array ( p01, dtype='float64' )
 	p10 = np.array ( p10, dtype='float64' )
 	p11 = np.array ( p11, dtype='float64' )
-	interpolateQuad_gridCoord( npxy, p00, p01, p10, p11, F, result )
+	lib.interpolateQuad_gridCoord( npxy, p00, p01, p10, p11, F, result )
+	return result
+
+def interpolate_cartesian( F, pos, cell=None, result=None ):
+	if cell is not None:
+		#print np.array(F.shape)
+		setGridCell( cell )
+	nDim = np.array(pos.shape)
+	print nDim
+	if result is None:
+		result = np.zeros( (nDim[0],nDim[1],nDim[2]) )
+	n  = nDim[0]*nDim[1]*nDim[2]
+	lib.interpolate_cartesian( n, pos, F, result )
 	return result
 
 def verticalCut( F, p1, p2, sz=(500,500) ):
@@ -97,7 +110,7 @@ def verticalCut( F, p1, p2, sz=(500,500) ):
 	p01 = np.array ( ( p2[0],p2[1],p1[2] ), dtype='float64' )
 	p10 = np.array ( ( p1[0],p1[1],p2[2] ), dtype='float64' )
 	p11 = np.array ( ( p2[0],p2[1],p2[2] ), dtype='float64' )
-	interpolateQuad_gridCoord( npxy, p00, p01, p10, p11, F, result )
+	lib.interpolateQuad_gridCoord( npxy, p00, p01, p10, p11, F, result )
 	return result
 
 # ==============  String / File IO utils
@@ -164,30 +177,33 @@ BEGIN_BLOCK_DATAGRID_3D
 def saveXSF(fname, data, lvec, head=XSF_HEAD_DEFAULT ):
 	fileout = open(fname, 'w')
 	for line in head:
-		fileout.write(line)
+	    fileout.write(line)
 	nDim = np.shape(data)
-	writeArr (fileout, (nDim[2],nDim[1],nDim[0]) )
+	writeArr (fileout, (nDim[2]+1,nDim[1]+1,nDim[0]+1) )
 	writeArr2D(fileout,lvec)
-	for r in data.flat:
-		fileout.write( "%10.5e\n" % r )
+	data2 = np.zeros(np.array(nDim)+1);   # These crazy 3 lines are here since the first and the last cube
+	data2[:-1,:-1,:-1] = data;  # in XSF in every direction is the same
+	data2[-1,:,:]=data2[0,:,:];data2[:,-1,:]=data2[:,0,:];data2[:,:,-1]=data2[:,:,0];
+	for r in data2.flat:
+	    fileout.write( "%10.5e\n" % r )
 	fileout.write ("   END_DATAGRID_3D\n")
 	fileout.write ("END_BLOCK_DATAGRID_3D\n")
 
 def loadXSF(fname):
 	filein = open(fname )
-        startline, head = readUpTo(filein, "DATAGRID_3D_")              # startline - number of the line with DATAGRID_3D_. Dinensions are located in the next line
+	startline, head = readUpTo(filein, "DATAGRID_3D_")              # startline - number of the line with DATAGRID_3D_. Dinensions are located in the next line
 	nDim = [ int(iii) for iii in filein.readline().split() ]        # reading 1 line with dimensions
 	nDim.reverse()
 	nDim = np.array( nDim)
 	lvec = readmat(filein, 4)                                       # reading 4 lines where 1st line is origin of datagrid and 3 next lines are the cell vectors
 	filein.close()
-        print nDim
+	print "nDim xsf (= nDim + [1,1,1] ):", nDim
 	print "GridUtils| Load "+fname+" using readNumsUpTo "    
 	F = readNumsUpTo(fname,nDim.astype(np.int32).copy(), startline+5)
-
-        print "GridUtils| Done"
+	
+	print "GridUtils| Done"
 	FF = np.reshape (F, nDim )
-	return FF,lvec, nDim, head
+	return FF[:-1,:-1,:-1],lvec, nDim-1, head
 
 def getFromHead_PRIMCOORD( head ): 
 	Zs = None; Rs = None;
@@ -237,7 +253,35 @@ def loadCUBE(fname):
 	head.append("BEGIN_BLOCK_DATAGRID_3D \n")
 	head.append("g98_3D_unknown \n")
 	head.append("DATAGRID_3D_g98Cube \n")
+        FF*=27.211396132
 	return FF,lvec, nDim, head
+#================ WSxM output
+
+def saveWSxM_2D(name_file, data, Xs, Ys):
+	tmp_data=data.flatten()
+	out_data=np.zeros((len(tmp_data),3))
+	out_data[:,0]=Xs.flatten()
+	out_data[:,1]=Ys.flatten()
+	out_data[:,2]=tmp_data	#.copy()
+	f=open(name_file,'w')
+	print >> f, "WSxM file copyright Nanotec Electronica"
+	print >> f, "WSxM ASCII XYZ file"
+	print >> f, "X[A]  Y[A]  df[Hz]"
+	print >> f, ""
+	np.savetxt(f, out_data)
+	f.close()
+
+def saveWSxM_3D( prefix, data, extent, slices=None ):
+	nDim=np.shape(data)
+	if slices is None:
+		slices=range( nDim[0] )
+	xs=np.linspace( extent[0], extent[1], nDim[2] )
+	ys=np.linspace( extent[2], extent[3], nDim[1] )
+	Xs, Ys = np.meshgrid(xs,ys)
+	for i in slices:
+		print "slice no: ", i
+		fname = prefix+'_%03d.xyz' %i
+		saveWSxM_2D(fname, data[i], Xs, Ys)
 
 #================ Npy
 
@@ -248,7 +292,7 @@ def saveNpy(fname, data, lvec ):
 def loadNpy(fname):
 	data = np.load(fname+'.npy')
 	lvec = np.load(fname+'_vec.npy')
-	return data, lvec
+	return data.copy(), lvec;	#necessary for being 'C_CONTINUOS'
 
 # =============== Vector Field
 
@@ -300,6 +344,58 @@ def limit_vec_field( FF, Fmax=100.0 ):
 	FF[:,:,:,1].flat[mask] *= Fmax/FR[mask] 
 	FF[:,:,:,2].flat[mask] *= Fmax/FR[mask]
 
+def save_vec_field(fname, data, lvec, data_format="xsf"):
+	'''
+	Saving scalar fields into xsf, or npy
+	'''
+	if (data_format=="xsf"):
+		saveVecFieldXsf(fname, data, lvec)
+	elif (data_format=="npy"):
+		saveVecFieldNpy(fname, data, lvec)
+	else:
+		print "I cannot save this format!"
+
+
+def load_vec_field(fname, data_format="xsf"):
+	'''
+	Loading Vector fields into xsf, or npy
+	'''
+	if (data_format=="xsf"):
+		data, lvec, ndim, head =loadVecFieldXsf(fname)
+	elif (data_format=="npy"):
+		data, lvec = loadVecFieldNpy(fname)
+		ndim = np.delete(data.shape,3)
+	else:
+		print "I cannot load this format!"
+	return data, lvec, ndim;
+
+
+# =============== Scalar Fields
+
+def save_scal_field(fname, data, lvec, data_format="xsf"):
+	'''
+	Saving scalar fields into xsf, or npy
+	'''
+	if (data_format=="xsf"):
+		saveXSF(fname+".xsf", data, lvec)
+	elif (data_format=="npy"):
+		saveNpy(fname, data, lvec)
+	else:
+		print "I cannot save this format!"
+
+
+def load_scal_field(fname, data_format="xsf"):
+	'''
+	Loading scalar fields into xsf, or npy
+	'''
+	if (data_format=="xsf"):
+		data, lvec, ndim, head =loadXSF(fname+".xsf")
+	elif (data_format=="npy"):
+		data, lvec = loadNpy(fname)
+		ndim = data.shape
+	else:
+		print "I cannot load this format!"
+	return data.copy(), lvec, ndim;
 
 # =============== Other Utils
 

@@ -307,7 +307,8 @@ def	read_FIREBALL_all(name = 'phi_' , geom='answer.bas', fermi=None, orbs = 'sp'
 	assert ((orbs == 'sp')or(orbs == 'spd')), "sorry I can't do different orbitals" 	
 	assert (imaginary == False), "sorry imaginary version is under development" 	
 	print " # ============ define atoms "
-	atoms    = bU.loadAtoms(geom, elements.ELEMENT_DICT )
+	#atoms    = bU.loadAtoms(geom, elements.ELEMENT_DICT )
+	atoms    = bU.loadAtoms(geom)
 	assert (cut_at <= len(atoms[1])), "wrong cut for atoms"
 	if not ((cut_at == -1)or(cut_at == len(atoms[1]))):
 		atoms2 = [atoms[0][:cut_at],atoms[1][:cut_at],atoms[2][:cut_at],atoms[3][:cut_at]]

@@ -12,6 +12,7 @@ import pyProbeParticle.GridUtils      as GU
 #import pyProbeParticle.core          as PPC
 import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.fieldFFT       as fFFT
+import pyProbeParticle.cpp_utils      as cpp_utils
 
 HELP_MSG="""Use this program in the following way:
 """+os.path.basename(main.__file__) +""" -i <filename> [ --sigma <value> ]
@@ -96,7 +97,7 @@ if (options.geometry!=None):
     PPU.params['gridC'] = lvec[3]
     
     if(gs_xyz):
-    	atoms = basUtils.loadAtoms(options.geometry, elements.ELEMENT_DICT )
+    	atoms = basUtils.loadAtoms(options.geometry )
     elif(gs_cube):
     	atoms = basUtils.loadAtomsCUBE(options.geometry,elements.ELEMENT_DICT)
     	lvec  = basUtils.loadCellCUBE(options.geometry)
@@ -117,8 +118,10 @@ if (options.geometry!=None):
     FFparams=None
     if os.path.isfile( 'atomtypes.ini' ):
     	print ">> LOADING LOCAL atomtypes.ini"  
-    	FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
-    iZs,Rs,Qs      = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC )
+    	FFparams=PPU.loadSpecies( 'atomtypes.ini' )
+    else:
+	FFparams = PPU.loadSpecies( cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini' ) 
+    iZs,Rs,Qs      = PPH.parseAtoms( atoms, autogeom = False, PBC = options.noPBC, FFparams=FFparams )
     FFLJ, VLJ      = PPH.computeLJ( Rs, iZs, FFLJ=None, FFparams=FFparams, Vpot=options.energy )
     print " shape of Lj. field", FFLJ.shape
 
