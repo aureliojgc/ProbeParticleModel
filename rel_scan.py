@@ -94,7 +94,6 @@ for iq,Q in enumerate( Qs ):
 		fzs = fs[:,:,:,2].copy()
 		del fs, tmp;
 		GU.saveNpy( dirname+'/OutFz', fzs, lvecScan)
-		GU.saveXSF( dirname+'/OutFz.xsf', fzs, lvecScan)
 
 #                print "SHAPE", PPpos.shape, xTips.shape, yTips.shape, zTips.shape
                 if opt_dict['disp']:
