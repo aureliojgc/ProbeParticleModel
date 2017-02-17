@@ -1,6 +1,8 @@
 
 # Probe Particle STM
 
+!!! No longer supported, newer version is available at : http://github.com/ondrejkrejci/PPSTM !!!
+
 This is implementation of efficient and simple model for simulation of High-resolution atomic force microscopy (AFM) and mainly scanning probe microscopy (STM).
 
 There are two versions of the code - 
