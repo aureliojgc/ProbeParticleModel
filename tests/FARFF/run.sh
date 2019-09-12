@@ -3,4 +3,4 @@
 #PPPATH="/home/prokop/git/ProbeParticleModel"
 PPPATH="../../"
 
-python $PPPATH/pyProbeParticle/FARFF.py
+python3 $PPPATH/pyProbeParticle/FARFF.py

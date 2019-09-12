@@ -80,7 +80,7 @@ def setupFF( n=None, itypes=None ):
         itypes = np.zeros( n, dtype=np.int32)
     else:
         n = len(itypes)
-    print "type(itypes)",type(itypes),"itypes",itypes
+    print("type(itypes)",type(itypes),"itypes",itypes)
     return lib.setupFF( n, _np_as(itypes,c_int_p) ) 
 
 #  double setupOpt( double dt, double damp, double f_limit, double l_limit ){
@@ -99,12 +99,12 @@ def setBox(pmin, pmax, k):
 lib.relaxNsteps.argtypes  = [c_int, c_double, c_int ] 
 lib.relaxNsteps.restype   =  c_double
 def relaxNsteps(nsteps, Fconv=1e-6, ialg=0):
-    print nsteps
+    print(nsteps)
     return lib.relaxNsteps( nsteps, Fconv, ialg) 
 
 if __name__ == "__main__":
     #import basUtils as bu
-    import atomicUtils as au
+    from . import atomicUtils as au
     import sys
     fff = sys.modules[__name__]
     xyzs,Zs,elems,qs = au.loadAtomsNP("input.xyz")     #; print xyzs
@@ -115,13 +115,13 @@ if __name__ == "__main__":
     ndof   = fff.reallocFF(natom)
     norb   = ndof - natom
     #atypes = fff.getTypes (natom)    ; print "atypes.shape ", atypes.shape
-    dofs   = fff.getDofs(ndof)       ; print "dofs.shape ", dofs.shape
-    apos   = dofs[:natom]            ; print "apos.shape ", apos.shape
-    opos   = dofs[natom:]            ; print "opos.shape ", opos.shape
+    dofs   = fff.getDofs(ndof)       ; print("dofs.shape ", dofs.shape)
+    apos   = dofs[:natom]            ; print("apos.shape ", apos.shape)
+    opos   = dofs[natom:]            ; print("opos.shape ", opos.shape)
 
     #atypes[:] = 0         # use default atom type
     apos[:,:] = xyzs[:,:] #
-    opos[:,:] = np.random.rand( norb, 3 ); print "opos.shape ", opos #   exit()
+    opos[:,:] = np.random.rand( norb, 3 ); print("opos.shape ", opos) #   exit()
 
     fff.setupFF(n=natom)   # use default atom type
 

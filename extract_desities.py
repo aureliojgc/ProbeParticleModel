@@ -23,13 +23,13 @@ if( fext == 'cube' ):
 	F /= GU.Hartree2eV
 
 zs = np.linspace( 0, lvec[3,2], nDim[0] )
-print lvec
+print(lvec)
 
 atoms,nDim,lvec     = BU.loadGeometry( options.i, params=PPU.params )
 
-print lvec
-print atoms
-print zs
+print(lvec)
+print(atoms)
+print(zs)
 
 GU.lib.setGridN   ( np.array( nDim[::-1], dtype=np.int32 )   )
 GU.lib.setGridCell( np.array( lvec[1:],   dtype=np.float64 ) )

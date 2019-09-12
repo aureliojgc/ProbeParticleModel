@@ -44,33 +44,33 @@ if __name__=="__main__":
     if os.path.isfile( 'params.ini' ):
         FFparams=PPU.loadParams( 'params.ini' ) 
     else:
-        print ">> LOADING default params.ini >> 's' ="  
+        print(">> LOADING default params.ini >> 's' =")  
         FFparams = PPU.loadParams( cpp_utils.PACKAGE_PATH+'/defaults/params.ini' )
     #PPU.loadParams( 'params.ini' )
     PPU.apply_options(opt_dict)    
 
     if os.path.isfile( 'atomtypes.ini' ):
-        print ">> LOADING LOCAL atomtypes.ini"  
+        print(">> LOADING LOCAL atomtypes.ini")  
         FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
     else:
         FFparams = PPU.loadSpecies( cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini' )
 
     V=None
     if(options.input.lower().endswith(".xsf") ):
-        print " loading Hartree potential from disk "
-        print "Use loadXSF"
+        print(" loading Hartree potential from disk ")
+        print("Use loadXSF")
         V, lvec, nDim, head = GU.loadXSF(options.input)
     elif(options.input.lower().endswith(".cube") ):
-        print " loading Hartree potential from disk "
-        print "Use loadCUBE"
+        print(" loading Hartree potential from disk ")
+        print("Use loadCUBE")
         V, lvec, nDim, head = GU.loadCUBE(options.input)
     
     if PPU.params['tip']==".py":
         #import tip
-        execfile("tip.py")
-        print tipMultipole
+        exec(compile(open("tip.py", "rb").read(), "tip.py", 'exec'))
+        print(tipMultipole)
         PPU.params['tip'] = tipMultipole
-        print " PPU.params['tip'] ", PPU.params['tip']
+        print(" PPU.params['tip'] ", PPU.params['tip'])
 
     if options.tip_dens:
         '''
@@ -96,29 +96,29 @@ if __name__=="__main__":
             atoms_ = np.array(atoms)
 
             dV = np.abs(np.linalg.det(lvec_tip[1:]))/(nDim_tip[0]*nDim_tip[1]*nDim_tip[2])
-            print "sum(RHO), Nelec",  rho_tip.sum(), dV, rho_tip.sum()*dV
+            print("sum(RHO), Nelec",  rho_tip.sum(), dV, rho_tip.sum()*dV)
             fFFT.addCoreDensities( atoms_, valElDict, rho_tip, lvec_tip, sigma=0.1 )
-            print "sum(RHO), Nelec",  rho_tip.sum(), dV, rho_tip.sum()*dV
+            print("sum(RHO), Nelec",  rho_tip.sum(), dV, rho_tip.sum()*dV)
             #exit()
         PPU.params['tip'] = rho_tip
 
     #FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],Fmax=10.0,computeVpot=options.energy,Vmax=10, tilt=opt_dict['tilt'] )
     FFel,Vel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] )
     
-    print " saving electrostatic forcefiled "
+    print(" saving electrostatic forcefiled ")
     
     if options.data_format=='xsf':
         import pyProbeParticle.basUtils  as BU
         atoms,nDim,lvec   = BU.loadGeometry( options.input, params=PPU.params )
         head              = BU.primcoords2Xsf( atoms[0], [atoms[1],atoms[2],atoms[3]], lvec )
         #print "atoms: ", atoms
-        print "head:  ", head
+        print("head:  ", head)
     else:
         import pyProbeParticle.basUtils  as BU
         atoms,nDim,lvec   = BU.loadGeometry( options.input, params=PPU.params )
         head              = [ atoms[0], [atoms[1],atoms[2],atoms[3]], lvec ]
         #print "atoms: ", atoms
-        print "head:  ", head
+        print("head:  ", head)
         
     GU.save_vec_field('FFel',FFel,lvec,data_format=options.data_format, head=head)
     if options.energy :

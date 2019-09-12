@@ -45,7 +45,7 @@ Fx,Fy,Fz,E = fFFT.potential2forces_mem( rho1, lvec1, nDim1, rho=rho2, doForce=Tr
 PQ = -1.0
 
 namestr = options.output
-print "save to ", namestr
+print("save to ", namestr)
 
 # Density Overlap Model
 GU.saveXSF( "E"+namestr+".xsf",    E*(PQ*-1.0), lvec1, head=head1 )
