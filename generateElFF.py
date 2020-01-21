@@ -31,6 +31,9 @@ if __name__=="__main__":
     parser.add_option("--noPBC", action="store_false",  help="pbc False",dest="PBC", default=None)
     parser.add_option( "-w", "--sigma", action="store", type="float",help="gaussian width for convolution in Electrostatics [Angstroem]", default=None)
     parser.add_option("-f","--data_format" , action="store" , type="string", help="Specify the output format of the vector and scalar field. Supported formats are: xsf,npy", default="xsf")
+    parser.add_option("--KPFM_tip", action="store",type="string", help="read tip density under bias")
+    parser.add_option("--KPFM_sample", action="store",type="string", help="read sample hartree under bias")
+    parser.add_option("--Vref", action="store",type="float", help="Field under the KPFM dens. and Vh was calculated in V/Ang")
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
@@ -89,6 +92,38 @@ if __name__=="__main__":
         print ">>> loading tip density from ",options.tip_dens,"..."
         rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
 
+        V_v0_aux = V.copy()
+        V_v0_aux2 = V.copy()
+        rho_tip_v0_aux = rho_tip.copy()
+
+        if ((options.KPFM_sample is not None) and (options.KPFM_tip is not None)):
+            V_kpfm=None
+            if(options.KPFM_sample.lower().endswith(".xsf") ):
+                print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
+                print "Use loadXSF"
+                V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
+            elif(options.KPFM_sample.lower().endswith(".cube") ):
+                print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
+                print "Use loadCUBE"
+                V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
+
+            print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
+            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
+
+            #calculate Delta files
+
+            dV_kpfm = (V_kpfm - V_v0_aux)/(options.Vref)
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)/(options.Vref)
+
+            for i in range(nDim[0]):
+                zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]
+                #zpos = 10.0
+                dV_kpfm[i,:,:] = dV_kpfm[i,:,:]/zpos   
+                V_v0_aux2[i,:,:] = V_v0_aux2[i,:,:]/zpos
+                #drho_kpfm[i,:,:] = drho_kpfm[i,:,:]/zpos
+
+            #del V_kpfm, V_kpfm;
+
         if options.Rcore > 0.0:
             print ">>> subtracting core densities from rho_tip ... "
             #subtractCoreDensities( rho_tip, lvec_tip, fname=options.tip_dens, valElDict=valElDict, Rcore=options.Rcore )
@@ -96,10 +131,20 @@ if __name__=="__main__":
 
         PPU.params['tip'] = rho_tip
 
+        if ((options.KPFM_sample is not None) and (options.KPFM_tip is not None)):
+                        #Calculate ~V terms
+            FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,rho_tip_v0_aux,computeVpot=options.energy , tilt=opt_dict['tilt'] )
+            FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
+
+            print ">>> saving electrostatic forcefiled ... "
+            GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
+            GU.save_vec_field('FFkpfm_tVs0',FFkpfm_tVs0,lvec_samp ,data_format=options.data_format, head=head_samp)
+
+
     print ">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... "
     #FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],Fmax=10.0,computeVpot=options.energy,Vmax=10, tilt=opt_dict['tilt'] )
     FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] )
-    
+
     print ">>> saving electrostatic forcefiled ... "
     
     GU.save_vec_field('FFel',FFel,lvec_samp ,data_format=options.data_format, head=head_samp)

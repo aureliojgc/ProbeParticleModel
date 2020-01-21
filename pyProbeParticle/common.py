@@ -31,6 +31,7 @@ params={
     #'Apauli':   0.60,
     'ffModel':     'LJ',
     'Rcore':    0.7,
+    'Vrange':   0.0,
     'r0Probe'  :  np.array( [ 0.00, 0.00, 4.00] ),
     'stiffness':  np.array( [ 0.5,  0.5, 20.00] ),
     'klat': 0.5,
@@ -51,6 +52,8 @@ params={
     'ddisp'        :  0.05,
     'aMorse'       :  -1.6,
     'tip_base':  np.array( ['None', 0.00 ]),
+    'Rtip'         :  30.0,
+    'permit'       :  0.00552634959,
     '#' : None
 }
 
@@ -79,7 +82,7 @@ def Fz2df( F, dz=0.1, k0 = params['kCantilever'], f0=params['f0Cantilever'], n=4
     Giessibl, F. J. A direct method to calculate tip-sample forces from frequency shifts in frequency-modulation atomic force microscopy Appl. Phys. Lett. 78, 123 (2001)
     oscialltion amplitude of cantilever is A = n * dz
     '''
-    W,xs = getDfWeight( n, dz=0.1 )
+    W,xs = getDfWeight( n, dz=dz )
     dFconv = np.apply_along_axis( lambda m: np.convolve(m, W, mode='valid'), axis=0, arr=F )
     return dFconv*units*f0/k0
 
