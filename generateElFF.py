@@ -12,6 +12,64 @@ import pyProbeParticle.fieldFFT       as fFFT
 import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.cpp_utils      as cpp_utils
 import pyProbeParticle.basUtils       as BU
+from scipy.optimize import curve_fit
+
+
+## def functions
+
+def correct_background_old(V,Vbias,lvec,Vac_lvl):
+    z = np.linspace(0,lvec[3,2],V.shape[0])
+    hev = 0.0*z
+    for i in range(z.shape[0]):
+
+        if z[i] > Vac_lvl:
+            hev[i] = 1.0
+
+    y = -Vbias*z+Vbias*z[-1]*hev
+    for i in range(z.shape[0]):
+        V[i,:,:] = V[i,:,:] - y[i]
+        if ((z[i] > Vac_lvl-0.3) and (z[i] < Vac_lvl+0.3)):
+            V[i,:,:] = 0.0
+
+    return V
+
+def correct_background(V,Vbias,lvec,Vac_lvl):
+    z = np.linspace(0,lvec[3,2],V.shape[0])
+    wf = V.mean(-1).mean(-1)
+
+    def correcttion_function(z, a, b, c, d, z0):
+        return a*z + b/(np.exp((z-z0)/d)+1) + c
+
+    #initial parameters
+    a0 = Vbias
+    b0 = (lvec[3,2]-lvec[0,2])*Vbias
+    c0 = 0.0
+    d0 = 0.1
+    z00 = Vac_lvl
+    param0 = [a0,b0,c0,d0,z00]
+
+    #select fitting area
+    zmin = Vac_lvl - 3.0
+    zmax = Vac_lvl + 3.0
+
+    iz_min = int(round(V.shape[0]*(zmin-lvec[0,2])/lvec[3,2]))
+    iz_max = int(round(V.shape[0]*(zmax-lvec[0,2])/lvec[3,2]))   
+
+    params = curve_fit(correcttion_function,z[iz_min:iz_max],wf[iz_min:iz_max],p0=param0)
+
+    [a,b,c,d,z0] = params[0]
+    print params[0]
+
+    y = correcttion_function(z, a, b, c, d, z0)
+
+    np.savetxt('correction_function', y)
+
+    for i in range(z.shape[0]):
+        V[i,:,:] = V[i,:,:] - y[i]
+        if (i > iz_min) and (i < iz_max):
+              V[i,:,:] = 0.0
+
+    return V
 
 if __name__=="__main__":
     HELP_MSG="""Use this program in the following way:
@@ -34,6 +92,8 @@ if __name__=="__main__":
     parser.add_option("--KPFM_tip", action="store",type="string", help="read tip density under bias")
     parser.add_option("--KPFM_sample", action="store",type="string", help="read sample hartree under bias")
     parser.add_option("--Vref", action="store",type="float", help="Field under the KPFM dens. and Vh was calculated in V/Ang")
+    parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
+    parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
@@ -102,6 +162,12 @@ if __name__=="__main__":
                 print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
                 print "Use loadXSF"
                 V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
+
+                if options.Vac is not None:
+                    print "correnting bias on workfunction with a ramp function"
+                    V_kpfm = correct_background(V_kpfm,options.Vref,lvec,options.Vac)
+                    print "printing the hartree for test porpouses"
+                    GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
             elif(options.KPFM_sample.lower().endswith(".cube") ):
                 print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
                 print "Use loadCUBE"
@@ -116,12 +182,18 @@ if __name__=="__main__":
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)/(options.Vref)
 
             for i in range(nDim[0]):
-                zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]
-                #zpos = 10.0
+                zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]# - options.z0
+                #if zpos < 1.0:
+                    #zpos =  (1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]
+                    #zpos = 1.0
+                    #zpos = -zpos
+                print zpos
                 dV_kpfm[i,:,:] = dV_kpfm[i,:,:]/zpos   
                 V_v0_aux2[i,:,:] = V_v0_aux2[i,:,:]/zpos
                 #drho_kpfm[i,:,:] = drho_kpfm[i,:,:]/zpos
-
+                #if zpos < 0.0: 
+                #    dV_kpfm[i,:,:] = 0.0
+                #    V_v0_aux2[i,:,:] = 0.0
             #del V_kpfm, V_kpfm;
 
         if options.Rcore > 0.0:
