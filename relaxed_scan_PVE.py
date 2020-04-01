@@ -96,8 +96,16 @@ if __name__=="__main__":
     print " ============= RUN  "
     FFvdW, FFpauli, FFel, FFboltz, FFkpfm_t0sV, FFkpfm_tVs0=None,None,None,None,None,None
 
-    FFpauli, lvec, nDim = GU.load_vec_field( "FFpauli" ,data_format=options.data_format)
-    FFpauli[0,:,:,:],FFpauli[1,:,:,:] = rotFF( FFpauli[0,:,:,:],FFpauli[1,:,:,:], opt_dict['rotate'] )
+
+    try:
+        FFpauli, lvec, nDim = GU.load_vec_field( "FFpauli" ,data_format=options.data_format)
+        FFpauli[0,:,:,:],FFpauli[1,:,:,:] = rotFF( FFpauli[0,:,:,:],FFpauli[1,:,:,:], opt_dict['rotate'] )
+
+        print " load Lenard-Jones Force-field "
+        FFvdW, lvec, nDim = GU.load_vec_field( "FFvdW" , data_format=options.data_format)
+        FFvdW[0,:,:,:],FFvdW[1,:,:,:] = rotFF( FFvdW[0,:,:,:],FFvdW[1,:,:,:], opt_dict['rotate'] )
+    except IOError:
+        FFvdW, lvec, nDim = GU.load_vec_field( "FFLJ" , data_format=options.data_format)
 
 
     if ( charged_system == True):
@@ -117,9 +125,7 @@ if __name__=="__main__":
         FFkpfm_tVs0[0,:,:,:],FFkpfm_tVs0[1,:,:,:] = rotFF( FFkpfm_tVs0[0,:,:,:],FFkpfm_tVs0[1,:,:,:], opt_dict['rotate'] )
 
 
-    print " load Lenard-Jones Force-field "
-    FFvdW, lvec, nDim = GU.load_vec_field( "FFvdW" , data_format=options.data_format)
-    FFvdW[0,:,:,:],FFvdW[1,:,:,:] = rotFF( FFvdW[0,:,:,:],FFvdW[1,:,:,:], opt_dict['rotate'] )
+
 
     #FFvdW*=0
     #FFvdW*=0.25

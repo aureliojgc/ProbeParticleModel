@@ -150,7 +150,11 @@ if __name__=="__main__":
         print " dens_tip check_sum Q =  ", np.sum( rho_tip )
         '''
         print ">>> loading tip density from ",options.tip_dens,"..."
-        rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
+
+        if (options.tip_dens.lower().endswith(".xsf")):
+            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
+        elif(options.tip_dens.lower().endswith(".cube")):
+            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False )
 
         V_v0_aux = V.copy()
         V_v0_aux2 = V.copy()
@@ -174,22 +178,26 @@ if __name__=="__main__":
                 V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
 
             print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
-            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
+
+            if (options.KPFM_tip.lower().endswith(".xsf")):
+                rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
+            elif(options.KPFM_tip.lower().endswith(".cube")):
+                rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
 
             #calculate Delta files
 
             dV_kpfm = (V_kpfm - V_v0_aux)/(options.Vref)
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)/(options.Vref)
 
-            for i in range(nDim[0]):
-                zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]# - options.z0
+        #    for i in range(nDim[0]):
+        #        zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]# - options.z0
                 #if zpos < 1.0:
                     #zpos =  (1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]
                     #zpos = 1.0
                     #zpos = -zpos
-                print zpos
-                dV_kpfm[i,:,:] = dV_kpfm[i,:,:]/zpos   
-                V_v0_aux2[i,:,:] = V_v0_aux2[i,:,:]/zpos
+        #        print zpos
+        #        dV_kpfm[i,:,:] = dV_kpfm[i,:,:]/zpos   
+        #        V_v0_aux2[i,:,:] = V_v0_aux2[i,:,:]/zpos
                 #drho_kpfm[i,:,:] = drho_kpfm[i,:,:]/zpos
                 #if zpos < 0.0: 
                 #    dV_kpfm[i,:,:] = 0.0

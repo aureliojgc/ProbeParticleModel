@@ -32,6 +32,9 @@ def get_LCPD(image_point,V,Q,K,a):
     return df_V
 
 
+
+
+
 from optparse import OptionParser
 parser = OptionParser()
 
@@ -44,6 +47,7 @@ parser.add_option( "--arange", action="store", type="float", help="oscilation am
 
 parser.add_option( "--Vrange",  action="store", type="float", help="set of bias to perform the scan under", nargs=3)
 parser.add_option( "--image_point", action="store", type="float", help="coordinates on the image for LCPD calculation", nargs=3)
+parser.add_option( "--xyz_point", action="store", type="float", help="cartesian coordinates for analysis", nargs=3)
 parser.add_option( "--save_LCPD" , action="store_true", default=False, help="save LCPD as data file " )
 
 (options, args) = parser.parse_args()
@@ -83,6 +87,8 @@ if opt_dict['image_point']:
     image_point[0,2] = opt_dict['image_point'][2]
 #else if multiple image points:
     #here deal with a list of points
+else if opt_dict['xyz_point']:
+
 else:
     print 'Scan point unspecified'
 
