@@ -186,8 +186,8 @@ if __name__=="__main__":
 
             #calculate Delta files
 
-            dV_kpfm = (V_kpfm - V_v0_aux)/(options.Vref)
-            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)/(options.Vref)
+            dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
 
         #    for i in range(nDim[0]):
         #        zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]# - options.z0
@@ -215,6 +215,12 @@ if __name__=="__main__":
                         #Calculate ~V terms
             FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,rho_tip_v0_aux,computeVpot=options.energy , tilt=opt_dict['tilt'] )
             FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
+
+            zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
+            for i in range(nDim[0]):
+                FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*zpos[i])
+                FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*zpos[i])
+
 
             print ">>> saving electrostatic forcefiled ... "
             GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
