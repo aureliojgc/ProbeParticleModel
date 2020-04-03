@@ -42,6 +42,7 @@ parser.add_option( "--iets",   action="store", type="float", help="mass [a.u.]; 
 parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied field [eV/Ang]" )
 parser.add_option( "--Vrange",  action="store", type="float", help="set of bias to perform the scan under", nargs=3)
 parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
+parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
 
 parser.add_option( "--df",       action="store_true", default=False,  help="plot images for dfz " )
 parser.add_option( "--save_df" , action="store_true", default=False, help="save frequency shift as df.xsf " )
@@ -204,7 +205,7 @@ for iq,Q in enumerate( Qs ):
                         Rtip = PPU.params['Rtip']
                         for iz,z in enumerate( zTips ):
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "bf"
-                            fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx
+                            fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "af"
 
                     for iA,Amp in enumerate( Amps ):
