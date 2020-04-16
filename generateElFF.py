@@ -218,16 +218,8 @@ if __name__=="__main__":
 
             zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
             for i in range(nDim[0]):
-                if zpos[i] is not 0.0:
-                    print zpos[i]
-                    FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*zpos[i])
-                    FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*zpos[i])
-                else:
-                    print 'z is zero!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-                    print zpos[i]
                     FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
                     FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
-
 
             print ">>> saving electrostatic forcefiled ... "
             GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
