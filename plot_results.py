@@ -42,7 +42,9 @@ parser.add_option( "--iets",   action="store", type="float", help="mass [a.u.]; 
 parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied field [eV/Ang]" )
 parser.add_option( "--Vrange",  action="store", type="float", help="set of bias to perform the scan under", nargs=3)
 parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
+parser.add_option( "--LCPD_maps", action="store_true", default=False, help="print LCPD maps")
 parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
+parser.add_option("--V2", action="store_false", default=True)
 
 parser.add_option( "--df",       action="store_true", default=False,  help="plot images for dfz " )
 parser.add_option( "--save_df" , action="store_true", default=False, help="save frequency shift as df.xsf " )
@@ -198,7 +200,7 @@ for iq,Q in enumerate( Qs ):
                 try :
                     fzs, lvec, nDim = GU.load_scal_field(dirname+'/OutFz' , data_format=options.data_format)
 
-                    if aplied_bias:
+                    if (aplied_bias and opt_dict["V2"] ):
                         permit = PPU.params['permit']
                         #permit = 8.8541878176E-12 * (1.0/1.602176565E-19) * (1E-10)
                         #print "permit = ", permit
@@ -206,6 +208,7 @@ for iq,Q in enumerate( Qs ):
                         for iz,z in enumerate( zTips ):
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "bf"
                             fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx
+                            print np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx, z
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "af"
 
                     for iA,Amp in enumerate( Amps ):
@@ -235,6 +238,18 @@ for iq,Q in enumerate( Qs ):
                         if opt_dict['WSxM']:
                             print " printing df into WSxM files :"
                             GU.saveWSxM_3D( dirNameAmp+"/df" , dfs , extent , slices=None)
+
+                        if opt_dict['LCPD_maps']:
+                            if (iv == 0):
+                                LCPD_b = - dfs
+                            if (iv == (Vs.shape[0]-1)):
+                                LCPD_b = (LCPD_b + dfs)/(2*Vx)
+                            PPPlot.plotImages(
+                                "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                                extent=extent,cmap=PPU.params['colorscale'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'] 
+                            )
+
+                            
                         del dfs
                     del fzs
                 except:
