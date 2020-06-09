@@ -246,7 +246,7 @@ for iq,Q in enumerate( Qs ):
                                 LCPD_b = (LCPD_b + dfs)/(2*Vx)
                             PPPlot.plotImages(
                                 "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
-                                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'] 
+                                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
                             )
 
                             
