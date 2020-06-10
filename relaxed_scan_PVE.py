@@ -48,6 +48,9 @@ if __name__=="__main__":
     parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied bias [V]" )
     parser.add_option( "--Vrange",       action="store", type="float", help="Bias range [V]", nargs=3 )
     parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
+    parser.add_option( "--pol_t", ation="store", type="float", default=1.0, help="scaling factor for tip polarization")
+    parser.add_option( "--pol_s", ation="store", type="float", default=1.0, help="scaling factor for sample polarization")
+
 
     (options, args) = parser.parse_args()
     opt_dict = vars(options)
@@ -139,7 +142,7 @@ if __name__=="__main__":
 
     if opt_dict['easy_KPFM_b']:
         PPU.params['Vbias'] = 0.1
-        f_kpfm,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW*0.0, FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t0sV=FFkpfm_t0sV,FFkpfm_tVs0=FFkpfm_tVs0,tipspline=options.tipspline)
+        f_kpfm,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW*0.0, FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t0sV=FFkpfm_t0sV*opt_dict['pol_s'],FFkpfm_tVs0=FFkpfm_tVs0*opt_dict['pol_t'],tipspline=options.tipspline)
         GU.save_scal_field( './OutKPFM_b', f_kpfm, lvecScan, data_format=options.data_format )
 
     for iq,Q in enumerate( Qs ):
