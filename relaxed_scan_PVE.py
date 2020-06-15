@@ -159,7 +159,7 @@ if __name__=="__main__":
                 if not os.path.exists( dirname ):
                     os.makedirs( dirname )
                  
-                fzs,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW, FFel=FFel, FFpauli=FFpauli, FFboltz=FFboltz,FFkpfm_t0sV=FFkpfm_t0sV,FFkpfm_tVs0=FFkpfm_tVs0,tipspline=options.tipspline)
+                fzs,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW, FFel=FFel, FFpauli=FFpauli, FFboltz=FFboltz,FFkpfm_t0sV=FFkpfm_t0sV*opt_dict['pol_s'],FFkpfm_tVs0=FFkpfm_tVs0*opt_dict['pol_t'],tipspline=options.tipspline)
                 #PPC.setTip( kSpring = np.array((K,K,0.0))/-PPU.eVA_Nm )
                 #Fs,rPPs,rTips = PPH.relaxedScan3D( xTips, yTips, zTips )
                 #GU.save_scal_field( dirname+'/OutFz', Fs[:,:,:,2], lvecScan, data_format=data_format )
