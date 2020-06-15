@@ -12,13 +12,13 @@ import pyProbeParticle as PPU
 from scipy.optimize import curve_fit
 
 
-def get_LCPD(image_point,V,Q,K,a):
+def get_LCPD(image_point,V,Q,K,Amp):
     df_V = np.zeros([ image_point.shape[0], V.shape[0] ] )
 
     
     for iv,Vx in enumerate( V ):
         
-        dirname = "Q%1.2fK%1.2fV%1.2f/Amp%1.2f/" %(Q,K,Vx,a)
+        dirname = "Q%1.2fK%1.2fV%1.2f/Amp%1.2f/" %(Q,K,Vx,Amp)
         df, image_lvec, image_nDim, image_head = GU.loadXSF(dirname+'df.xsf')
         for i in range(image_point.shape[0]):
             image_relative_point = np.array([image_point[i,0]/image_lvec[1,0],image_point[i,1]/image_lvec[2,1],(image_point[i,2]-image_lvec[0,2])/image_lvec[3,2]])
@@ -28,10 +28,34 @@ def get_LCPD(image_point,V,Q,K,a):
             image_mtx_elementz = int(round(image_relative_point[2]*df.shape[0]))
         
             df_V[i,iv] =  df[image_mtx_elementz,image_mtx_elementy,image_mtx_elementx]
+
+            df_fit=np.zeros([image_point.shape[0],4])
+            x_axis = np.linspace(-1,1,200)
+
+            acd = np.zeros((image_point.shape[0],3))
+            fit_data = np.zeros((image_point.shape[0],x_axis.shape[0]))
+            x = V
+            y = df_V[i,:]
+
+            def fit_func(x, a, d, c):
+                return a*x**2 + d*x+c
+
+            params = curve_fit(fit_func, x, y)
+
+            [a, d, c] = params[0]
+
+            acd[i,:] = params[0]
+
+            fit_data[i,:] = a*(x_axis**2) + d*x_axis + c
+
+            df_fit[i,0] = image_point[i,2]
+            df_fit[i,1] = acd[i,0]
+            df_fit[i,2] = acd[i,1]
+            df_fit[i,3] = acd[i,2]
+
+
             
-    return df_V
-
-
+    return df_V, df_fit, fit_data, x_axis
 
 
 
@@ -95,7 +119,7 @@ Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], opt_dict['Vrange
 for iq,Q in enumerate( Qs ):
     for ik,K in enumerate( Ks ):
         for iA,Amp in enumerate( Amps ):
-            df_V = get_LCPD(image_point,Vs,Q,K,Amp)
+            df_V, df_fit, df_fitted, V_fitted = get_LCPD(image_point,Vs,Q,K,Amp)
 
             for i in range(image_point.shape[0]):
 
@@ -103,7 +127,9 @@ for iq,Q in enumerate( Qs ):
                 y = opt_dict['image_point'][1]
                 z = opt_dict['image_point'][2]
 
-                plt.plot(Vs[:],df_V[i,:], label="x%1.2fy%1.2fz%1.2f" %(x,y,z), linewidth=5)
+                plt.plot(V_fitted[:], df_fitted[i,:], linewidth=3)
+                plt.plot(Vs[:],df_V[i,:], label="x%1.2fy%1.2fz%1.2f" %(x,y,z), marker="o")
+                plt.plot(Vs[:],df_fit[i,2]*Vs[:]+df_fit[i,3])
                 plt.legend(["x%1.2fy%1.2fz%1.2f"  %(x,y,z)])
 
 
@@ -120,3 +146,4 @@ for iq,Q in enumerate( Qs ):
                 outdata = np.append([Vs], df_V, axis=0)
                 outdata = np.transpose(outdata)
                 np.savetxt('LCPD'+filename+'.dat', outdata)
+                np.savetxt('LCPD_fit'+filename+'.dat', df_fit)

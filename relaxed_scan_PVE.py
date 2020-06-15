@@ -48,8 +48,8 @@ if __name__=="__main__":
     parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied bias [V]" )
     parser.add_option( "--Vrange",       action="store", type="float", help="Bias range [V]", nargs=3 )
     parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
-    parser.add_option( "--pol_t", ation="store", type="float", default=1.0, help="scaling factor for tip polarization")
-    parser.add_option( "--pol_s", ation="store", type="float", default=1.0, help="scaling factor for sample polarization")
+    parser.add_option( "--pol_t", action="store", type="float", default=1.0, help="scaling factor for tip polarization")
+    parser.add_option( "--pol_s", action="store", type="float", default=1.0, help="scaling factor for sample polarization")
 
 
     (options, args) = parser.parse_args()
