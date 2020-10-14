@@ -5,7 +5,10 @@ import os
 import sys
 import __main__ as main
 import numpy as np
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt  ## is it necessary? check
+except:
+    import matplotlib as plt
 #import GridUtils as GU
 #sys.path.append("/u/25/prokoph1/unix/git/ProbeParticleModel")
 

@@ -83,7 +83,7 @@ if __name__=="__main__":
     elif opt_dict['Vbias'] is not None:
         Vs = [ opt_dict['Vbias'] ]
     else:
-        Vs = 0.0
+        Vs = [0.0]
     for iV,Vx in enumerate(Vs):
         if ( abs(Vx) > 1e-7):
             aplied_bias=True       
@@ -127,7 +127,8 @@ if __name__=="__main__":
         FFkpfm_t0sV[0,:,:,:],FFkpfm_t0sV[1,:,:,:] = rotFF( FFkpfm_t0sV[0,:,:,:],FFkpfm_t0sV[1,:,:,:], opt_dict['rotate'] )
         FFkpfm_tVs0[0,:,:,:],FFkpfm_tVs0[1,:,:,:] = rotFF( FFkpfm_tVs0[0,:,:,:],FFkpfm_tVs0[1,:,:,:], opt_dict['rotate'] )
 
-
+        FFkpfm_t0sV = FFkpfm_t0sV*opt_dict['pol_s']
+        FFkpfm_tVs0 = FFkpfm_tVs0*opt_dict['pol_t']
 
 
     #FFvdW*=0
@@ -142,7 +143,7 @@ if __name__=="__main__":
 
     if opt_dict['easy_KPFM_b']:
         PPU.params['Vbias'] = 0.1
-        f_kpfm,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW*0.0, FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t0sV=FFkpfm_t0sV*opt_dict['pol_s'],FFkpfm_tVs0=FFkpfm_tVs0*opt_dict['pol_t'],tipspline=options.tipspline)
+        f_kpfm,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW*0.0, FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t0sV=FFkpfm_t0sV,FFkpfm_tVs0=FFkpfm_tVs0,tipspline=options.tipspline)
         GU.save_scal_field( './OutKPFM_b', f_kpfm, lvecScan, data_format=options.data_format )
 
     for iq,Q in enumerate( Qs ):
@@ -159,7 +160,7 @@ if __name__=="__main__":
                 if not os.path.exists( dirname ):
                     os.makedirs( dirname )
                  
-                fzs,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW, FFel=FFel, FFpauli=FFpauli, FFboltz=FFboltz,FFkpfm_t0sV=FFkpfm_t0sV*opt_dict['pol_s'],FFkpfm_tVs0=FFkpfm_tVs0*opt_dict['pol_t'],tipspline=options.tipspline)
+                fzs,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW, FFel=FFel, FFpauli=FFpauli, FFboltz=FFboltz,FFkpfm_t0sV=FFkpfm_t0sV,FFkpfm_tVs0=FFkpfm_tVs0,tipspline=options.tipspline)
                 #PPC.setTip( kSpring = np.array((K,K,0.0))/-PPU.eVA_Nm )
                 #Fs,rPPs,rTips = PPH.relaxedScan3D( xTips, yTips, zTips )
                 #GU.save_scal_field( dirname+'/OutFz', Fs[:,:,:,2], lvecScan, data_format=data_format )

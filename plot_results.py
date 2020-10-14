@@ -101,7 +101,7 @@ if opt_dict['Vrange'] is not None:
 elif opt_dict['Vbias'] is not None:
     Vs = [ opt_dict['Vbias'] ]
 else:
-    Vs = 0.0
+    Vs = [0.0]
 for iV,Vx in enumerate(Vs):
     if ( abs(Vx) > 1e-7):
         aplied_bias=True     
