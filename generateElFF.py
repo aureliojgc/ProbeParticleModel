@@ -156,54 +156,6 @@ if __name__=="__main__":
         elif(options.tip_dens.lower().endswith(".cube")):
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False )
 
-        V_v0_aux = V.copy()
-        V_v0_aux2 = V.copy()
-        rho_tip_v0_aux = rho_tip.copy()
-
-        if ((options.KPFM_sample is not None) and (options.KPFM_tip is not None)):
-            V_kpfm=None
-            if(options.KPFM_sample.lower().endswith(".xsf") ):
-                print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
-                print "Use loadXSF"
-                V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
-
-                if options.Vac is not None:
-                    print "correnting bias on workfunction with a ramp function"
-                    V_kpfm = correct_background(V_kpfm,options.Vref,lvec,options.Vac)
-                    print "printing the hartree for test porpouses"
-                    GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
-            elif(options.KPFM_sample.lower().endswith(".cube") ):
-                print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
-                print "Use loadCUBE"
-                V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
-
-            print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
-
-            if (options.KPFM_tip.lower().endswith(".xsf")):
-                rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
-            elif(options.KPFM_tip.lower().endswith(".cube")):
-                rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
-
-            #calculate Delta files
-
-            dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
-            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
-
-        #    for i in range(nDim[0]):
-        #        zpos = (i+1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]# - options.z0
-                #if zpos < 1.0:
-                    #zpos =  (1.0)*(lvec[3,2]-lvec[0,2])/nDim[0]
-                    #zpos = 1.0
-                    #zpos = -zpos
-        #        print zpos
-        #        dV_kpfm[i,:,:] = dV_kpfm[i,:,:]/zpos   
-        #        V_v0_aux2[i,:,:] = V_v0_aux2[i,:,:]/zpos
-                #drho_kpfm[i,:,:] = drho_kpfm[i,:,:]/zpos
-                #if zpos < 0.0: 
-                #    dV_kpfm[i,:,:] = 0.0
-                #    V_v0_aux2[i,:,:] = 0.0
-            #del V_kpfm, V_kpfm;
-
         if options.Rcore > 0.0:
             print ">>> subtracting core densities from rho_tip ... "
             #subtractCoreDensities( rho_tip, lvec_tip, fname=options.tip_dens, valElDict=valElDict, Rcore=options.Rcore )
@@ -211,19 +163,56 @@ if __name__=="__main__":
 
         PPU.params['tip'] = rho_tip
 
-        if ((options.KPFM_sample is not None) and (options.KPFM_tip is not None)):
+    if (options.KPFM_sample is not None):
+
+        V_v0_aux = V.copy()
+        V_v0_aux2 = V.copy()
+
+        V_kpfm=None
+        if(options.KPFM_sample.lower().endswith(".xsf") ):
+            print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
+            print "Use loadXSF"
+            V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
+
+            if options.Vac is not None:
+                print "correnting bias on workfunction with a ramp function"
+                V_kpfm = correct_background(V_kpfm,options.Vref,lvec,options.Vac)
+                print "printing the hartree for test porpouses"
+                GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
+        elif(options.KPFM_sample.lower().endswith(".cube") ):
+            print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
+            print "Use loadCUBE"
+            V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
+            
+        dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
+
+    if (options.KPFM_tip is not None):
+
+        print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
+
+        if (options.KPFM_tip.lower().endswith(".xsf")):
+            rho_tip_v0_aux = rho_tip.copy()
+            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
+        elif(options.KPFM_tip.lower().endswith(".cube")):
+            rho_tip_v0_aux = rho_tip.copy()
+            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
+        elif options.KPFM_tip in {'fit', 'dipole', 'pz'}:
+            drho_kpfm={'pz':0.05}
+
                         #Calculate ~V terms
-            FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,rho_tip_v0_aux,computeVpot=options.energy , tilt=opt_dict['tilt'] )
-            FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
+        FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] )
+        FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
 
-            zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
-            for i in range(nDim[0]):
-                    FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
-                    FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+        zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
+        for i in range(nDim[0]):
+                FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+                FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
 
-            print ">>> saving electrostatic forcefiled ... "
-            GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
-            GU.save_vec_field('FFkpfm_tVs0',FFkpfm_tVs0,lvec_samp ,data_format=options.data_format, head=head_samp)
+        print ">>> saving electrostatic forcefiled ... "
+        GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
+        GU.save_vec_field('FFkpfm_tVs0',FFkpfm_tVs0,lvec_samp ,data_format=options.data_format, head=head_samp)
 
 
     print ">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... "
