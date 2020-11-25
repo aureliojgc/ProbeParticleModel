@@ -314,6 +314,8 @@ def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, 
         print "rho.abs().sum()/scQ2dens ", np.sum(np.abs(rho/scQ2dens))
         exit()
         '''
+
+        #rho[:,:,:] = rho[::-1,::-1,::-1].copy() # turn probe backwards for convolution for coherence with DFT calculated tip. Do not change anything for dz2 or s, but dipolar tips like pz for KPFM does.
         GU.saveXSF( "rhoTip.xsf", rho, lvec )
 
     else:

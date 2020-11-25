@@ -199,11 +199,16 @@ if __name__=="__main__":
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         elif options.KPFM_tip in {'fit', 'dipole', 'pz'}:
-            drho_kpfm={'pz':0.05}
+            drho_kpfm={'pz':1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015
 
                         #Calculate ~V terms
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] )
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
+
+        #debug save tippol
+        rho, lvec_tip, nDim_tip, tiphead = GU.loadXSF("rhoTip.xsf")
+        GU.saveXSF( "Tip_bias_pol.xsf", rho, lvec )
+        #debug save tippol
 
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
         for i in range(nDim[0]):

@@ -239,7 +239,7 @@ for iq,Q in enumerate( Qs ):
                             print " printing df into WSxM files :"
                             GU.saveWSxM_3D( dirNameAmp+"/df" , dfs , extent , slices=None)
 
-                        if opt_dict['LCPD_maps']:
+                        if (opt_dict['LCPD_maps'] and (iv==0)):
                             if (iv == 0):
                                 LCPD_b = - dfs
                             if (iv == (Vs.shape[0]-1)):
