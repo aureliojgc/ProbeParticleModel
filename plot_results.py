@@ -239,16 +239,16 @@ for iq,Q in enumerate( Qs ):
                             print " printing df into WSxM files :"
                             GU.saveWSxM_3D( dirNameAmp+"/df" , dfs , extent , slices=None)
 
-                        if (opt_dict['LCPD_maps'] and (iv==0)):
+                        if  opt_dict['LCPD_maps']:
                             if (iv == 0):
                                 LCPD_b = - dfs
                             if (iv == (Vs.shape[0]-1)):
                                 LCPD_b = (LCPD_b + dfs)/(2*Vx)
-                            PPPlot.plotImages(
-                                "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
-                                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
-                            )
-                            GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
+                            #PPPlot.plotImages(
+                            #    "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                            #    extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
+                            #)
+                            #GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
                             
                         del dfs
@@ -265,6 +265,13 @@ for iq,Q in enumerate( Qs ):
                 except:
                     print "error: ", sys.exc_info()
                     print "cannot load : " + (dirname+'/OutI_boltzmann.'+options.data_format ) 
+            
+        if  opt_dict['LCPD_maps']:
+            PPPlot.plotImages(
+                "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
+            )
+            GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
 print " ***** ALL DONE ***** "
 

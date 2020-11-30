@@ -183,6 +183,7 @@ if __name__=="__main__":
             print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
             print "Use loadCUBE"
             V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
+
             
         dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
 
@@ -199,15 +200,16 @@ if __name__=="__main__":
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         elif options.KPFM_tip in {'fit', 'dipole', 'pz'}:
-            drho_kpfm={'pz':1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015
+            drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
 
                         #Calculate ~V terms
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] )
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
 
         #debug save tippol
-        rho, lvec_tip, nDim_tip, tiphead = GU.loadXSF("rhoTip.xsf")
-        GU.saveXSF( "Tip_bias_pol.xsf", rho, lvec )
+        if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
+            rho, lvec_tip, nDim_tip, tiphead = GU.loadXSF("rhoTip.xsf")
+            GU.saveXSF( "Tip_bias_pol.xsf", rho, lvec )
         #debug save tippol
 
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
