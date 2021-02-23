@@ -20,6 +20,9 @@
 #define _circ_inc( i, n )   i++; if(i>=n) i=0;
 #define _circ_dec( i, n )   i--; if(i< 0) i=n-1;
 
+
+inline int wrap(int i,int n){ if(i>=n)i=i-n; if(i<0)i=i+n; return i; }
+
 //#define _realloc(TYPE,arr,n){ if(var) delete [] arr; arr=new TYPE[n]; }
 
 //#define BEGIN_WITH(x) { \
@@ -56,13 +59,13 @@ _inline_T int      signum(T val)      { return (T(0) < val) - (val < T(0)); }
 _inline_T void _allocIfNull(T*& arr, int n){ if(arr==0){ arr=new T[n];} }
 _inline_T void _realloc(T*& arr, int n){ if(arr){ delete [] arr;} arr=new T[n]; }
 _inline_T void _dealloc(T*& arr       ){ if(arr){ delete [] arr;} arr=0;        }
-_inline_T bool _bindOrRealloc(int n, T* from, T*& arr ){ if(from){arr=from;}else{_realloc(arr,n);} }
+_inline_T void _bindOrRealloc(int n, T* from, T*& arr ){ if(from){arr=from;}else{_realloc(arr,n);} }
 
-_inline_T  bool _clone( int i0, int imax, T* from, T*& arr, int n){
+_inline_T  void _clone( int i0, int imax, T* from, T*& arr, int n){
     _allocIfNull(arr,n);
     for(int i=i0; i<imax; i++){ arr[i]=from[i-i0]; } // use mem copy instead ?
 }
-_inline_T bool _set( int i0, int imax, const T& from, T*& arr, int n){
+_inline_T void _set( int i0, int imax, const T& from, T*& arr, int n){
     _allocIfNull(arr,n);
     for(int i=i0; i<imax; i++){ arr[i]=from; }
 }

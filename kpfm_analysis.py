@@ -133,7 +133,8 @@ for iq,Q in enumerate( Qs ):
                 plt.plot(V_fitted[:], df_fitted[i,:], linewidth=3)
                 plt.plot(Vs[:],df_V[i,:], label="x%1.2fy%1.2fz%1.2f" %(x,y,z), marker="o")
                 plt.plot(Vs[:],df_fit[i,2]*Vs[:]+df_fit[i,3])
-                plt.legend(["x%1.2fy%1.2fz%1.2f\n df=%1.2fV^2+%1.2fV+%1.2f"  %(x,y,z,df_fit[i,1],df_fit[i,2],df_fit[i,3])])
+                LCPD_max = (-df_fit[i,2]/(2*df_fit[i,1]))
+                plt.legend(["x%1.2fy%1.2fz%1.2f\n df=%1.3fV^2+%1.3fV+%1.3f\n Vmax=%1.3f"  %(x,y,z,df_fit[i,1],df_fit[i,2],df_fit[i,3],LCPD_max)])
 
 
             plt.xlabel('bias (V)', fontsize=10)
