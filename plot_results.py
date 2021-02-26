@@ -272,6 +272,12 @@ for iq,Q in enumerate( Qs ):
                 extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
+        if  opt_dict['LCPD_maps']:
+            PPPlot.plotImages(
+                "./_Asym-b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False 
+            )
+            GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
 print " ***** ALL DONE ***** "
 
