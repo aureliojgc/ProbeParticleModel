@@ -101,6 +101,10 @@ if __name__=="__main__":
     print PPU.params['probeType']
     print PPU.params['probeType']
     print PPU.params['probeType']
+    if ( PPU.params['probeType'] in {'O'} ):
+        print "conseguido!!!!!!!!!!!!!!!!"
+    if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
+        print "asdasdawd"
     print PPU.params['probeType']
     print PPU.params['probeType']
     print PPU.params['probeType']
