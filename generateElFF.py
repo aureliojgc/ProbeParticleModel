@@ -216,6 +216,7 @@ if __name__=="__main__":
             print " "
             print " I do at leats get that tip is a fit"
             print " "
+            print PPU.params['probeType']
             print " "
             if ( PPU.params['probeType'] in {'O'} ):
                 drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
