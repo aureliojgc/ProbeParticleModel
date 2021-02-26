@@ -218,7 +218,7 @@ if __name__=="__main__":
             print " "
             print PPU.params['probeType']
             print " "
-            if ( PPU.params['probeType'] in {'O'} ):
+            if ( PPU.params['probeType'] == 8 ):
                 drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.7
                 print "  "
@@ -227,7 +227,7 @@ if __name__=="__main__":
                 print "  "
                 print "  "
                 print "  "
-            if ( PPU.params['probeType'] == 'Xe' ):
+            if ( PPU.params['probeType'] == 8 ):
                 drho_kpfm={'pz':0.016}
                 sigma = 0.8
                         #Calculate ~V terms
