@@ -98,6 +98,14 @@ if __name__=="__main__":
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
 
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+    print PPU.params['probeType']
+
     if options.input is None:
         sys.exit("ERROR!!! Please, specify the input file with the '-i' option \n\n"+HELP_MSG)
     opt_dict = vars(options)
@@ -199,13 +207,6 @@ if __name__=="__main__":
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
-        print PPU.params['probeType']
-        print PPU.params['probeType']
-        print PPU.params['probeType']
-        print PPU.params['probeType']
-        print PPU.params['probeType']
-        print PPU.params['probeType']
-        print PPU.params['probeType']
         elif options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             if ( PPU.params['probeType'] == 8 ):
                 drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
