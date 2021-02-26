@@ -80,7 +80,8 @@ def perform_relaxation (lvec,FFLJ,FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t
         if(verbose>0): print "adding charge:", PPU.params['charge']
     if ( FFkpfm_t0sV is not None and FFkpfm_tVs0 is not None ):
         
-        FF += (FFkpfm_t0sV + FFkpfm_tVs0) * PPU.params['charge'] * PPU.params['Vbias']
+        #FF += (FFkpfm_t0sV + FFkpfm_tVs0) * PPU.params['charge'] * PPU.params['Vbias']
+        FF += (FFkpfm_t0sV + FFkpfm_tVs0) * (-1.0) * PPU.params['Vbias']
         if(verbose>0): print "adding charge:", PPU.params['charge'], "and bias:", PPU.params['Vbias'], "V"
     if ( FFpauli is not None ):
         FF += FFpauli * PPU.params['Apauli']

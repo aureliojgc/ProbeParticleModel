@@ -201,10 +201,10 @@ if __name__=="__main__":
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         elif options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             if ( PPU.params('probeType') is 8 ):
-                drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.7
-            if ( PPU.params('probeType') is 54 ):
-                drho_kpfm={'pz':0.08}
+            if ( PPU.params('probeType') is 24 ):
+                drho_kpfm={'pz':0.016}
                 sigma = 0.8
                         #Calculate ~V terms
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
