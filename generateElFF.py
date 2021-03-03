@@ -221,7 +221,8 @@ if __name__=="__main__":
                 sigma = 0.8
                 print " Select Xe-tip polarization "
                         #Calculate ~V terms
-        FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
+        tip_aux_2 = PPU.params['tip'].copy()
+        FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,tip_aux_2,computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
 
         #debug save tippol
