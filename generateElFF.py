@@ -94,21 +94,10 @@ if __name__=="__main__":
     parser.add_option("--Vref", action="store",type="float", help="Field under the KPFM dens. and Vh was calculated in V/Ang")
     parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
     parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
+    parser.add_option("--linEtoV", action="store_true",  help="convert E to V via E=V/z, if false just E=V/10", default=True)
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
-
-    print PPU.params['probeType']
-    print PPU.params['probeType']
-    print PPU.params['probeType']
-    if ( PPU.params['probeType'] in {'O'} ):
-        print "conseguido!!!!!!!!!!!!!!!!"
-    if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
-        print "asdasdawd"
-    print PPU.params['probeType']
-    print PPU.params['probeType']
-    print PPU.params['probeType']
-    print PPU.params['probeType']
 
     if options.input is None:
         sys.exit("ERROR!!! Please, specify the input file with the '-i' option \n\n"+HELP_MSG)
@@ -187,7 +176,7 @@ if __name__=="__main__":
             V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
 
             if options.Vac is not None:
-                print "correnting bias on workfunction with a ramp function"
+                print "correcting bias on workfunction with a ramp function"
                 V_kpfm = correct_background(V_kpfm,options.Vref,lvec,options.Vac)
                 print "printing the hartree for test porpouses"
                 GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
@@ -231,10 +220,14 @@ if __name__=="__main__":
             GU.saveXSF( "Tip_bias_pol.xsf", rho, lvec )
         #debug save tippol
 
-        zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
-        for i in range(nDim[0]):
-                FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
-                FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+        if options.linEtoV is True:
+            zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
+            for i in range(nDim[0]):
+                    FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+                    FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+        else:
+            FFkpfm_t0sV=FFkpfm_t0sV/((options.Vref)*(10.0))
+            FFkpfm_tVs0=FFkpfm_tVs0/((options.Vref)*(10.0))            
 
         print ">>> saving electrostatic forcefiled ... "
         GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
