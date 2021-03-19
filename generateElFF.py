@@ -221,11 +221,13 @@ if __name__=="__main__":
         #debug save tippol
 
         if options.linEtoV is True:
+            print "Linear E to V"
             zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
             for i in range(nDim[0]):
-                    FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
-                    FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+                FFkpfm_t0sV[i,:,:]=FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
+                FFkpfm_tVs0[i,:,:]=FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))
         else:
+            print "Constant E to V"
             FFkpfm_t0sV=FFkpfm_t0sV/((options.Vref)*(10.0))
             FFkpfm_tVs0=FFkpfm_tVs0/((options.Vref)*(10.0))            
 
