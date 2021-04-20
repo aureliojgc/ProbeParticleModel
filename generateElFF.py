@@ -205,12 +205,19 @@ if __name__=="__main__":
                 drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.7
                 print " Select CO-tip polarization "
-            if ( PPU.params['probeType'] == '24' ):
+            if ( PPU.params['probeType'] == '47' ):
+                drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                sigma = 3.0
+                print " Select CO-tip polarization "
+            if ( PPU.params['probeType'] == '54' ):
                 drho_kpfm={'pz':0.016}
                 sigma = 0.8
                 print " Select Xe-tip polarization "
-                        #Calculate ~V terms
-        tip_aux_2 = PPU.params['tip'].copy()
+                        #Calculate ~V terms     
+        if options.tip_dens is not None:
+            tip_aux_2 = PPU.params['tip'].copy()
+        else:
+            tip_aux_2 = PPU.params['tip']
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,tip_aux_2,computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'] )
 
