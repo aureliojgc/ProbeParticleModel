@@ -205,6 +205,7 @@ for iq,Q in enumerate( Qs ):
                         #permit = 8.8541878176E-12 * (1.0/1.602176565E-19) * (1E-10)
                         #print "permit = ", permit
                         Rtip = PPU.params['Rtip']
+                        print Rtip, '  Rtip value for kpfm  in hereee !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 '
                         for iz,z in enumerate( zTips ):
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "bf"
                             fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx
@@ -268,18 +269,18 @@ for iq,Q in enumerate( Qs ):
             
         if  opt_dict['LCPD_maps']:
             PPPlot.plotImages(
-                "./b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                "./LCPD"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
                 extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
             if opt_dict['WSxM']:
                 print " printing LCPD_b into WSxM files :"
-                GU.saveWSxM_3D( "./b_HzperV"+atoms_str , LCPD_b , extent , slices=None)
+                GU.saveWSxM_3D( "./LCPD"+atoms_str , LCPD_b , extent , slices=None)
 
         if  opt_dict['LCPD_maps']:
             PPPlot.plotImages(
-                "./_Asym-b_HzperV"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                "./_Asym-LCPD"+atoms_str+cbar_str, LCPD_b,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
                 extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False 
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
