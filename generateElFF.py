@@ -39,7 +39,7 @@ if __name__=="__main__":
     parser.add_option("--Vref", action="store",type="float", help="Field under the KPFM dens. and Vh was calculated in V/Ang")
     parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
     parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
-    parser.add_option("--linEtoV", action="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
+    parser.add_option("--linEtoV", action="store", type="float"  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
