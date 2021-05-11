@@ -100,7 +100,7 @@ if __name__=="__main__":
         if (options.tip_dens.lower().endswith(".xsf")):
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
         elif(options.tip_dens.lower().endswith(".cube")):
-            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False )
+            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens)
 
         if options.Rcore > 0.0:
             print ">>> subtracting core densities from rho_tip ... "
