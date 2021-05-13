@@ -52,10 +52,12 @@ def getSphericalHarmonic( X, Y, Z, kind='dz2', tilt = 0.0 ):
     Z,X = rotZX(Z,X, tilt=tilt)
     # TODO: renormalization should be probaby here
     if    kind=='s':
-        if(verbose>0): print 'Spherical harmonic: s'
+        #if(verbose>0): 
+        print 'Spherical harmonic: s'
         return 1.0
     if    kind=='s+':
-        if(verbose>0): print 'Spherical harmonic: s'
+        #if(verbose>0): 
+        print 'Spherical harmonic: sp'
         return -1.0
     # p-functions
     elif  kind=='px':

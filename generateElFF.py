@@ -151,7 +151,7 @@ if __name__=="__main__":
                 sigma = 0.7
                 print " Select CO-tip polarization "
             if ( PPU.params['probeType'] == '47' ):
-                drho_kpfm={'pz':0.125} 
+                drho_kpfm={'pz':0.21875} 
                 sigma = 0.7
                 print " Select Ag polarization with decay sigma", sigma
             if ( PPU.params['probeType'] == '54' ):
