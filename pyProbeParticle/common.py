@@ -55,6 +55,7 @@ params={
     'tip_base':  np.array( ['None', 0.00 ]),
     'Rtip'         :  30.0,
     'permit'       :  0.00552634959,
+    'COstiffness'  :  2.0,
     '#' : None
 }
 

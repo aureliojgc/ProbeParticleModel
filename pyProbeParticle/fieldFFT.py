@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-
+import pyProbeParticle                as PPU  
 import gc
 
 import GridUtils as GU
@@ -54,6 +54,9 @@ def getSphericalHarmonic( X, Y, Z, kind='dz2', tilt = 0.0 ):
     if    kind=='s':
         if(verbose>0): print 'Spherical harmonic: s'
         return 1.0
+    if    kind=='s+':
+        if(verbose>0): print 'Spherical harmonic: s'
+        return -1.0
     # p-functions
     elif  kind=='px':
         if(verbose>0): print 'Spherical harmonic: px'
@@ -68,6 +71,9 @@ def getSphericalHarmonic( X, Y, Z, kind='dz2', tilt = 0.0 ):
     if    kind=='dz2' :
         if(verbose>0): print 'Spherical harmonic: dz2'
         return 0.25*(2*Z**2 - X**2 - Y**2) #quadrupole normalized to get 3 times the quadrpole in the standard (cartesian) tensor normalization of Qzz. Also, 3D integral of rho_dz2(x,y,z)*(z/sigma)**2 gives 1 in the normalization use here.
+    if    kind=='CO' :
+        if(verbose>0): print 'Spherical harmonic: dz2'
+        return 0.25*(PPU.params['COstiffness']*Z**2 - X**2 - Y**2) 
     elif    kind=='dx2' :
         if(verbose>0): print 'Spherical harmonic: dx2'
         return 0.25*(2*X**2 - Y**2 - Z**2)
