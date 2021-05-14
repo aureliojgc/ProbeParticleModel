@@ -212,7 +212,7 @@ def computeElFF(V,lvec,nDim,tip,computeVpot=False, tilt=0.0 ,sigma=PPU.params['s
     elif type(tip) is dict:
         multipole = tip
     else:
-        if tip in {'s','px','py','pz','dx2','dy2','dz2','dxy','dxz','dyz'}:
+        if tip in {'s','px','py','pz','dx2','dy2','co','dz2','dxy','dxz','dyz'}:
             rho = None
             multipole={tip:1.0}
         elif tip.endswith(".xsf"):
