@@ -273,7 +273,7 @@ for iq,Q in enumerate( Qs ):
             LCPD = -LCPD_b/(2*LCPD_a)
             PPPlot.plotImages(
                 "./LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
-                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True 
+                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True ,V0=options.V0
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
@@ -284,7 +284,7 @@ for iq,Q in enumerate( Qs ):
         if  opt_dict['LCPD_maps']:
             PPPlot.plotImages(
                 "./_Asym-LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
-                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False ,V0=options.V0
+                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False 
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
