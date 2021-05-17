@@ -65,7 +65,7 @@ def plotImages(
     for ii,i in enumerate(slices):
         print " plotting ", i
         if symetric_map:
-            limit = max(abs(np.min(F[i]))-V0, abs(np.max(F[i]))-V0 )
+            limit = max(abs(np.min(F[i]-V0)), abs(np.max(F[i]-V0)) )
             vmin = -limit+V0
             vmax = limit+V0
         plt.figure( figsize=figsize )
