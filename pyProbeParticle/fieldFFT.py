@@ -55,10 +55,6 @@ def getSphericalHarmonic( X, Y, Z, kind='dz2', tilt = 0.0 ):
         #if(verbose>0): 
         print 'Spherical harmonic: s'
         return 1.0
-    elif    kind=='sp':
-        #if(verbose>0): 
-        print 'Spherical harmonic: sp'
-        return -1.0
     # p-functions
     elif  kind=='px':
         if(verbose>0): print 'Spherical harmonic: px'

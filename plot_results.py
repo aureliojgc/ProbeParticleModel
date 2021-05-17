@@ -45,6 +45,7 @@ parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="c
 parser.add_option( "--LCPD_maps", action="store_true", default=False, help="print LCPD maps")
 parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
 parser.add_option("--V2", action="store_false", default=True)
+parser.add_option("--V0", action="store",type="float", default=0.0 ,help="Empirical LCPD maxima shift due to mesoscopic workfunction diference")
 
 parser.add_option( "--df",       action="store_true", default=False,  help="plot images for dfz " )
 parser.add_option( "--save_df" , action="store_true", default=False, help="save frequency shift as df.xsf " )
@@ -208,8 +209,8 @@ for iq,Q in enumerate( Qs ):
                         print Rtip, '  Rtip value for kpfm  in hereee !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 '
                         for iz,z in enumerate( zTips ):
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "bf"
-                            fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx
-                            print np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx, z
+                            fzs[iz,:,:] = fzs[iz,:,:] - np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*(Vx-options.V0)*(Vx-options.V0)
+                            #print np.pi*permit*((Rtip*Rtip)/((z-options.z0)*(z+Rtip)))*Vx*Vx, z
                             #print iz, z, Vx ,np.pi*permit*((Rtip*Rtip)/(z*(z+Rtip)))*Vx*Vx, fzs[iz,100,100], "af"
 
                     for iA,Amp in enumerate( Amps ):
@@ -283,7 +284,7 @@ for iq,Q in enumerate( Qs ):
         if  opt_dict['LCPD_maps']:
             PPPlot.plotImages(
                 "./_Asym-LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
-                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False 
+                extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False ,V0=options.V0
             )
             GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
