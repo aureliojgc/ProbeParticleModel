@@ -1,13 +1,30 @@
-#!/usr/bin/env python
-
+#!/usr/bin/python
+import sys
 import numpy as np
-import pyProbeParticle                as PPU  
-import gc
+import os
+import __main__ as main
 
-import GridUtils as GU
+
+#from   pyProbeParticle            import elements   
+import pyProbeParticle                as PPU  
+import pyProbeParticle.GridUtils      as GU
+import pyProbeParticle.fieldFFT       as fFFT
+import pyProbeParticle.HighLevel      as PPH
+import pyProbeParticle.cpp_utils      as cpp_utils
+import pyProbeParticle.basUtils       as BU
+import pyProbeParticle.kpfmUtils      as kpfmU
+
+import pyProbeParticle.core
+import pyProbeParticle.cpp_utils
+from scipy.optimize import curve_fit
+
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option( "-i", "--input", action="store", type="string", help="format of input file")
+parser.add_option("--sigz", action="store",type="float", default=0.7 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
+(options, args) = parser.parse_args()
 
 verbose = 1
-
 
 def fieldInfo( F, label="FieldInfo: min max av: " ):
     print label, np.min(F), np.max(F), np.average(F)
@@ -419,4 +436,43 @@ def Average_tip( Val_tip, W_surf, W_tip ):
 
     del kE; del kFE
     return (FE/E).real;
+
+
+
+###########################################################3 Main ###########################################################3
+sigma = 0.7
+rho=None 
+rhox=None 
+rhoy=None 
+rhoz=None 
+tilt=0.0
+
+V=None
+if(options.input.lower().endswith(".xsf") ):
+    print ">>> loading Hartree potential from  ",options.input,"..."
+    print "Use loadXSF"
+    V, lvec, nDim, head = GU.loadXSF(options.input)
+elif(options.input.lower().endswith(".cube") ):
+    print " loading Hartree potential from ",options.input,"..."
+    print "Use loadCUBE"
+    V, lvec, nDim, head = GU.loadCUBE(options.input)
+
+sampleSize = getSampleDimensions( lvec )
+dims = (nDim[2], nDim[1], nDim[0])
+xsize, dx = getSize('x', dims, sampleSize)
+ysize, dy = getSize('y', dims, sampleSize)
+zsize, dz = getSize('z', dims, sampleSize)
+dd = (dx, dy, dz)
+X, Y, Z = getMGrid(dims, dd)
+fieldInfo( Z, label="fieldInfo Z " )
+
+
+rhox = getProbeDensity(sampleSize, X, Y, Z, dd, sigma=sigma, multipole_dict={'px2':1.0}, tilt=tilt)
+rhoy = getProbeDensity(sampleSize, X, Y, Z, dd, sigma=sigma, multipole_dict={'py2':1.0}, tilt=tilt)
+rhoz = getProbeDensity(sampleSize, X, Y, Z, dd, sigma=options.sigz, multipole_dict={'pz2':2.0}, tilt=tilt)
+
+rho = rhoz - rhox - rhoy
+
+
+GU.saveXSF( str(options.sigz)+"rhoTip.xsf", rho, lvec )
 
