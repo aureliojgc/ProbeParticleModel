@@ -134,7 +134,7 @@ if __name__=="__main__":
         dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
 
     if (options.KPFM_tip is not None):
-    sigma = PPU.params['sigma']
+        sigma = PPU.params['sigma']
         print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
 
         if (options.KPFM_tip.lower().endswith(".xsf")):
