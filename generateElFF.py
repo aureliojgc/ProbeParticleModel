@@ -147,7 +147,7 @@ if __name__=="__main__":
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             if ( PPU.params['probeType'] == '8' ):
-                drho_kpfm={'pz':0.025} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.7
                 print " Select CO-tip polarization "
             if ( PPU.params['probeType'] == '47' ):
@@ -155,9 +155,9 @@ if __name__=="__main__":
                 sigma = 0.7
                 print " Select Ag polarization with decay sigma", sigma
             if ( PPU.params['probeType'] == '54' ):
-                drho_kpfm={'pz':0.016}
+                drho_kpfm={'pz':0.250}
                 sigma = 0.8
-                print " Select Xe-tip polarization "
+                print " Select Xe-tip polarization"
                         #Calculate ~V terms     
         if options.tip_dens is not None:
             tip_aux_2 = PPU.params['tip'].copy()
