@@ -272,10 +272,9 @@ for iq,Q in enumerate( Qs ):
         if  opt_dict['LCPD_maps']:
             LCPD = -LCPD_b/(2*LCPD_a)
             PPPlot.plotImages(
-                "./LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                "./LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD) ), zs=zTips+PPU.params['Amplitude']/2.0,
                 extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=True ,V0=options.V0
             )
-            GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
 
             if opt_dict['WSxM']:
                 print " printing LCPD_b into WSxM files :"
@@ -283,10 +282,10 @@ for iq,Q in enumerate( Qs ):
 
         if  opt_dict['LCPD_maps']:
             PPPlot.plotImages(
-                "./_Asym-LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD_b) ), zs=zTips+PPU.params['Amplitude']/2.0,
+                "./_Asym-LCPD"+atoms_str+cbar_str, LCPD,  slices = range( 0, len(LCPD) ), zs=zTips+PPU.params['Amplitude']/2.0,
                 extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'], symetric_map=False 
             )
-            GU.save_scal_field('./LCDP_HzperV', LCPD_b, lvec,data_format=options.data_format )
+            GU.save_scal_field('./LCDP_HzperV', LCPD, lvec,data_format=options.data_format )
 
 print " ***** ALL DONE ***** "
 
