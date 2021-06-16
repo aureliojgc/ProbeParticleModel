@@ -40,19 +40,35 @@ parser.add_option( "-A", "--Apauli", action="store", type="float", default="1.0"
 parser.add_option( "-E", "--energy",     action="store_true",            help="Compue potential energ y(not just Force)", default=False)
 parser.add_option( "--saveDebugXsfs",        action="store_true",  help="save auxuliary xsf files for debugging", default=False )
 parser.add_option( "--densityMayBeNegative", action="store_false", help="input desnity files from DFT may contain negative voxels, lets handle them properly", default=True )
+parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
+
 
 (options, args) = parser.parse_args()
 
 #rho1, lvec1, nDim1, head1 = GU.loadXSF("./pyridine/CHGCAR.xsf")
 #rho2, lvec2, nDim2, head2 = GU.loadXSF("./CO_/CHGCAR.xsf")
 
-print ">>> Loading sample from ", options.sample, " ... "
-rhoS, lvecS, nDimS, headS = GU.loadXSF( options.sample )
-print ">>> Loading tip from ", options.tip, " ... "
-rhoT, lvecT, nDimT, headT = GU.loadXSF( options.tip    )
+if(options.input.lower().endswith(".xsf") ):
+    print ">>> Loading sample from ", options.sample, " ... "
+    rhoS, lvecS, nDimS, headS = GU.loadXSF(options.input)
+elif(options.input.lower().endswith(".cube") ):
+    print ">>> Loading sample from ", options.sample, " ... "
+    rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.input, borh = options.borh)
+
+if(options.tip.lower().endswith(".xsf") ):
+    print ">>> Loading sample from ", options.sample, " ... "
+    rhoT, lvecT, nDimT, headT = GU.loadXSF( options.tip    )
+elif(options.tip.lower().endswith(".cube") ):
+    print ">>> Loading sample from ", options.sample, " ... "
+    rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, borh = options.borh)
+
+#print ">>> Loading sample from ", options.sample, " ... "
+#rhoS, lvecS, nDimS, headS = GU.loadXSF( options.sample )
+#print ">>> Loading tip from ", options.tip, " ... "
+#rhoT, lvecT, nDimT, headT = GU.loadXSF( options.tip    )
 
 if np.any( nDimS != nDimT ): raise Exception( "Tip and Sample grids has different dimensions! - sample: "+str(nDimS)+" tip: "+str(nDimT) )
-if np.any( lvecS != lvecT ): raise Exception( "Tip and Sample grids has different shap! - sample: "+str(lvecS )+" tip: "+str(lvecT) )
+if np.any( lvecS != lvecT ): raise Exception( "Tip and Sample grids has different shape! - sample: "+str(lvecS )+" tip: "+str(lvecT) )
 
 handleAECCAR( options.sample, lvecS, rhoS )
 handleAECCAR( options.tip,    lvecT, rhoT )

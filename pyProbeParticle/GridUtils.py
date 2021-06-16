@@ -263,7 +263,7 @@ def getFromHead_PRIMCOORD( head ):
 
 # =================== Cube
 
-def loadCUBE(fname, hartree=True):
+def loadCUBE(fname, hartree=True, borh = False):
 	filein = open(fname )
 	#First two lines of the header are comments
 	header1=filein.readline()
@@ -299,11 +299,11 @@ def loadCUBE(fname, hartree=True):
 	head.append("BEGIN_BLOCK_DATAGRID_3D \n")
 	head.append("g98_3D_unknown \n")
 	head.append("DATAGRID_3D_g98Cube \n")
-	if hartree:
+	if hartree and not borh:
 		FF*=Hartree2eV
-	else:
-	    FF*=(bohrRadius2angstroem**3)
-
+	elif borh:
+		print "Charge density is read in a.u. and convert to Ang"
+		FF*=(1/bohrRadius2angstroem**3)
 	return FF,lvec, nDim, head
 #================ WSxM output
 
