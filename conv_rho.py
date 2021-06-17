@@ -53,14 +53,14 @@ if(options.input.lower().endswith(".xsf") ):
     rhoS, lvecS, nDimS, headS = GU.loadXSF(options.input)
 elif(options.input.lower().endswith(".cube") ):
     print ">>> Loading sample from ", options.sample, " ... "
-    rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.input, borh = options.borh)
+    rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.input, hartree=False, borh = options.borh)
 
 if(options.tip.lower().endswith(".xsf") ):
     print ">>> Loading sample from ", options.sample, " ... "
     rhoT, lvecT, nDimT, headT = GU.loadXSF( options.tip    )
 elif(options.tip.lower().endswith(".cube") ):
     print ">>> Loading sample from ", options.sample, " ... "
-    rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, borh = options.borh)
+    rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, hartree=False, borh = options.borh)
 
 #print ">>> Loading sample from ", options.sample, " ... "
 #rhoS, lvecS, nDimS, headS = GU.loadXSF( options.sample )

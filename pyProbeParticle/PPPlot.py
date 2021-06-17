@@ -62,6 +62,7 @@ def plotImages(
     cmap=default_cmap, interpolation=default_interpolation, vmin=None, vmax=None, cbar=False, 
     atoms=None, bonds=None, atomSize=default_atom_size, symetric_map=False, V0=0.0
     ):
+    plt.rcParams.update({'font.size': 10})
     for ii,i in enumerate(slices):
         print " plotting ", i
         if symetric_map:

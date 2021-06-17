@@ -40,6 +40,7 @@ if __name__=="__main__":
     parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
     parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
     parser.add_option("--linEtoV", action="store", type="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
+    parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
@@ -100,7 +101,7 @@ if __name__=="__main__":
         if (options.tip_dens.lower().endswith(".xsf")):
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
         elif(options.tip_dens.lower().endswith(".cube")):
-            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False )
+            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False, borh = options.borh )
 
         if options.Rcore > 0.0:
             print ">>> subtracting core densities from rho_tip ... "
@@ -143,7 +144,7 @@ if __name__=="__main__":
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         elif(options.KPFM_tip.lower().endswith(".cube")):
             rho_tip_v0_aux = rho_tip.copy()
-            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False )
+            rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             if ( PPU.params['probeType'] == '8' ):
