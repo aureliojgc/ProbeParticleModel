@@ -48,12 +48,12 @@ parser.add_option( "--borh", action="store_true", help="the input is in a.u.", d
 #rho1, lvec1, nDim1, head1 = GU.loadXSF("./pyridine/CHGCAR.xsf")
 #rho2, lvec2, nDim2, head2 = GU.loadXSF("./CO_/CHGCAR.xsf")
 
-if(options.input.lower().endswith(".xsf") ):
+if(options.sample.lower().endswith(".xsf") ):
     print ">>> Loading sample from ", options.sample, " ... "
-    rhoS, lvecS, nDimS, headS = GU.loadXSF(options.input)
-elif(options.input.lower().endswith(".cube") ):
+    rhoS, lvecS, nDimS, headS = GU.loadXSF(options.sample)
+elif(options.sample.lower().endswith(".cube") ):
     print ">>> Loading sample from ", options.sample, " ... "
-    rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.input, hartree=False, borh = options.borh)
+    rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.sample, hartree=False, borh = options.borh)
 
 if(options.tip.lower().endswith(".xsf") ):
     print ">>> Loading sample from ", options.sample, " ... "
