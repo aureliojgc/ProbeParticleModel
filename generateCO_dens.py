@@ -57,7 +57,7 @@ if (options.borh):
     rho = rho*(bohrRadius2angstroem**3)
 
 if(options.input.lower().endswith(".xsf") ):
-    GU.saveXSF( str(options.sigz)+"s_density.xsf", rho, lvec )
+    GU.saveXSF("s_density.xsf", rho, lvec )
 elif(options.input.lower().endswith(".cube") ):
     print "soubrutine to write cube files to be developed"
 
