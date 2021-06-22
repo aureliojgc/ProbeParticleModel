@@ -61,9 +61,9 @@ if(options.input.lower().endswith(".xsf") ):
 elif(options.input.lower().endswith(".cube") ):
     print "soubrutine to write cube files to be developed"
 
-z = np.linspace(lvec[0,2]-options.xyz_shift[2],lvec[0,2]+lvec[3,2]-options.xyz_shift[2],nDim[0])
+z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
 rho_profile = rho[:,0,0]
 
-datos = [z,rho_profile]
+datos = np.transpose([z,rho_profile])
 
-np.savetxt('profile_sigma_'+str(options.sigma)+'_module_'+str(options.module))
+np.savetxt('profile_sigma_'+str(options.sigma)+'_module_'+str(options.module), datos)
