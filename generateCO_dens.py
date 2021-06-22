@@ -60,6 +60,7 @@ if(options.input.lower().endswith(".xsf") ):
     GU.saveXSF("s_density.xsf", rho, lvec )
 elif(options.input.lower().endswith(".cube") ):
     print "soubrutine to write cube files to be developed"
+    GU.saveXSF("s_density.xsf", rho, lvec )
 
 z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
 rho_profile = rho[:,0,0]
