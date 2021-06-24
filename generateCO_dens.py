@@ -33,38 +33,42 @@ rhoy=None
 rhoz=None 
 tilt=0.0
 
-V=None
-if(options.input.lower().endswith(".xsf") ):
-    print ">>> loading Hartree potential from  ",options.input,"..."
-    print "Use loadXSF"
-    V, lvec, nDim, head = GU.loadXSF(options.input)
-elif(options.input.lower().endswith(".cube") ):
-    print " loading Hartree potential from ",options.input,"..."
-    print "Use loadCUBE"
-    V, lvec, nDim, head = GU.loadCUBE(options.input)
+#V=None
+#if(options.input.lower().endswith(".xsf") ):
+#    print ">>> loading Hartree potential from  ",options.input,"..."
+#    print "Use loadXSF"
+#    V, lvec, nDim, head = GU.loadXSF(options.input)
+#elif(options.input.lower().endswith(".cube") ):
+#    print " loading Hartree potential from ",options.input,"..."
+#    print "Use loadCUBE"
+#    V, lvec, nDim, head = GU.loadCUBE(options.input)
 
-sampleSize = fFFT.getSampleDimensions( lvec )
-dims = (nDim[2], nDim[1], nDim[0])
-xsize, dx = fFFT.getSize('x', dims, sampleSize)
-ysize, dy = fFFT.getSize('y', dims, sampleSize)
-zsize, dz = fFFT.getSize('z', dims, sampleSize)
-dd = (dx, dy, dz)
-X, Y, Z = fFFT.getMGrid(dims, dd)
-fFFT.fieldInfo( Z, label="fieldInfo Z " )
+def generate_CO_density(lvec, nDim, head, borh=False, modulo=8.0, sigma=0.4)
+    sampleSize = fFFT.getSampleDimensions( lvec )
+    dims = (nDim[2], nDim[1], nDim[0])
+    xsize, dx = fFFT.getSize('x', dims, sampleSize)
+    ysize, dy = fFFT.getSize('y', dims, sampleSize)
+    zsize, dz = fFFT.getSize('z', dims, sampleSize)
+    dd = (dx, dy, dz)
+    X, Y, Z = fFFT.getMGrid(dims, dd)
+    fFFT.fieldInfo( Z, label="fieldInfo Z " )
 
-rho = fFFT.getProbeDensity(sampleSize, X, Y, Z, dd, sigma=options.sigma, multipole_dict={'s':options.module}, tilt=tilt)
-if (options.borh):
-    rho = rho*(bohrRadius2angstroem**3)
+    rho = fFFT.getProbeDensity(sampleSize, X, Y, Z, dd, sigma=sigma, multipole_dict={'s':modulo}, tilt=tilt)
+    if (options.borh):
+        rho = rho*(bohrRadius2angstroem**3)
 
-if(options.input.lower().endswith(".xsf") ):
-    GU.saveXSF("s_density.xsf", rho, lvec )
-elif(options.input.lower().endswith(".cube") ):
-    print "soubrutine to write cube files to be developed"
-    GU.saveXSF("s_density.xsf", rho, lvec )
+    z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
+    rho_profile = rho[:,0,0]
 
-z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
-rho_profile = rho[:,0,0]
+    datos = [z,rho_profile]
 
-datos = np.transpose([z,rho_profile])
+    np.savetxt('profile_sigma_'+str(options.sigma)+'_module_'+str(options.module))
 
-np.savetxt('profile_sigma_'+str(options.sigma)+'_module_'+str(options.module), datos)
+
+    return rho, lvec, nDim, head
+
+#    if(options.input.lower().endswith(".xsf") ):
+#        GU.saveXSF( str(options.sigz)+"s_density.xsf", rho, lvec )
+#    elif(options.input.lower().endswith(".cube") ):
+#        print "soubrutine to write cube files to be developed"
+
