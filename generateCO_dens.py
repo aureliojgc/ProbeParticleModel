@@ -38,7 +38,7 @@ def generate_CO_density(lvec, nDim, head, borh=False, modulo=8.0, sigma=0.4):
     z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
     rho_profile = rho[:,0,0]
 
-    datos = [z,rho_profile]
+    datos = np.transpose([z,rho_profile])
 
     np.savetxt('profile_sigma_'+str(sigma)+'_module_'+str(modulo), datos)
 
