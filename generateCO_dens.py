@@ -15,35 +15,13 @@ import pyProbeParticle.basUtils       as BU
 import pyProbeParticle.kpfmUtils      as kpfmU
 from scipy.optimize import curve_fit
 
-from optparse import OptionParser
-
-parser = OptionParser()
-parser.add_option( "-i", "--input", action="store", type="string", default="CHGCAR.xsf", help="sample 3D data-file (.xsf)")
-parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
-parser.add_option( "--module", action="store", type="float", default="1.0" )
-parser.add_option( "--sigma", action="store", type="float", default="0.7" )
-
-(options, args) = parser.parse_args()
-
 bohrRadius2angstroem = 0.5291772109217
-sigma = options.sigma
 rho=None 
 rhox=None 
 rhoy=None 
 rhoz=None 
-tilt=0.0
 
-#V=None
-#if(options.input.lower().endswith(".xsf") ):
-#    print ">>> loading Hartree potential from  ",options.input,"..."
-#    print "Use loadXSF"
-#    V, lvec, nDim, head = GU.loadXSF(options.input)
-#elif(options.input.lower().endswith(".cube") ):
-#    print " loading Hartree potential from ",options.input,"..."
-#    print "Use loadCUBE"
-#    V, lvec, nDim, head = GU.loadCUBE(options.input)
-
-def generate_CO_density(lvec, nDim, head, borh=False, modulo=8.0, sigma=0.4)
+def generate_CO_density(lvec, nDim, head, borh=False, modulo=8.0, sigma=0.4):
     sampleSize = fFFT.getSampleDimensions( lvec )
     dims = (nDim[2], nDim[1], nDim[0])
     xsize, dx = fFFT.getSize('x', dims, sampleSize)
@@ -53,22 +31,17 @@ def generate_CO_density(lvec, nDim, head, borh=False, modulo=8.0, sigma=0.4)
     X, Y, Z = fFFT.getMGrid(dims, dd)
     fFFT.fieldInfo( Z, label="fieldInfo Z " )
 
-    rho = fFFT.getProbeDensity(sampleSize, X, Y, Z, dd, sigma=sigma, multipole_dict={'s':modulo}, tilt=tilt)
-    if (options.borh):
+    rho = fFFT.getProbeDensity(sampleSize, X, Y, Z, dd, sigma=sigma, multipole_dict={'s':modulo})
+    if (borh):
         rho = rho*(bohrRadius2angstroem**3)
 
     z = np.linspace(lvec[0,2],lvec[0,2]+lvec[3,2],nDim[0])
     rho_profile = rho[:,0,0]
 
-    datos = [z,rho_profile]
+    datos = np.transpose([z,rho_profile])
 
-    np.savetxt('profile_sigma_'+str(options.sigma)+'_module_'+str(options.module))
+    np.savetxt('profile_sigma_'+str(sigma)+'_module_'+str(modulo), datos)
 
 
     return rho, lvec, nDim, head
-
-#    if(options.input.lower().endswith(".xsf") ):
-#        GU.saveXSF( str(options.sigz)+"s_density.xsf", rho, lvec )
-#    elif(options.input.lower().endswith(".cube") ):
-#        print "soubrutine to write cube files to be developed"
 

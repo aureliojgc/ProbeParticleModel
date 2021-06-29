@@ -15,6 +15,8 @@ except:
 import pyProbeParticle                as PPU
 import pyProbeParticle.GridUtils      as GU
 import pyProbeParticle.fieldFFT       as fFFT
+import generateCO_dens
+
 from optparse import OptionParser
 
 # ======== Functions
@@ -61,9 +63,9 @@ if(options.tip.lower().endswith(".xsf") ):
 elif(options.tip.lower().endswith(".cube") ):
     print ">>> Loading sample from ", options.sample, " ... "
     rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, hartree=False, borh = options.borh)
-elif(options.tip is "fit"):
+elif(options.tip.lower().endswith("fit") ):
     print "generating sample with s orbital"
-    rhoT, lvecT, nDimT, headT = CO_gen.generate_CO_density(lvecS, nDimS, headS, borh=options.borh, modulo=8.0, sigma=0.4)
+    rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, borh=options.borh, modulo=8.0, sigma=0.42)
 
 #print ">>> Loading sample from ", options.sample, " ... "
 #rhoS, lvecS, nDimS, headS = GU.loadXSF( options.sample )
