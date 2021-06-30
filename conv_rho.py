@@ -38,7 +38,7 @@ parser.add_option( "-s", "--sample", action="store", type="string", default="CHG
 parser.add_option( "-t", "--tip",    action="store", type="string", default="./tip/CHGCAR.xsf", help="tip 3D data-file (.xsf)")
 parser.add_option( "-o", "--output", action="store", type="string", default="pauli", help="output 3D data-file (.xsf)")
 parser.add_option( "-B", "--Bpower", action="store", type="float", default="-1.0", help="exponent B in formula E = A*Integral( rho_tip^B * rho_sample^B ); NOTE: negative value equivalent to B=1 ")
-parser.add_option( "-A", "--Apauli", action="store", type="float", default="1.0", help="prefactor A in formula E = A*Integral( rho_tip^B * rho_sample^B ); NOTE: default A=1 since re-scaling done in relax_scan_PVE.py")
+parser.add_option( "-A", "--Apauli", action="store", type="float", default="-1.0", help="prefactor A in formula E = A*Integral( rho_tip^B * rho_sample^B ); NOTE: default A=1 since re-scaling done in relax_scan_PVE.py")
 parser.add_option( "-E", "--energy",     action="store_true",            help="Compue potential energ y(not just Force)", default=False)
 parser.add_option( "--saveDebugXsfs",        action="store_true",  help="save auxuliary xsf files for debugging", default=False )
 parser.add_option( "--densityMayBeNegative", action="store_false", help="input desnity files from DFT may contain negative voxels, lets handle them properly", default=True )
