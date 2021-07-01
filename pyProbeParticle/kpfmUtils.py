@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import numpy as np
+from scipy.optimize import curve_fit
+
 
 def correct_background(V,Vbias,lvec,Vac_lvl):
     z = np.linspace(0,lvec[3,2],V.shape[0])
