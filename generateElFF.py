@@ -123,7 +123,7 @@ if __name__=="__main__":
 
             if options.Vac is not None:
                 print "correcting bias on workfunction with a ramp function"
-                V_kpfm = kpfmU.correct_background(V_kpfm,options.Vref,lvec,options.Vac)
+                V_kpfm = kpfmU.correct_background(V_kpfm,Vref,lvec,options.Vac)
                 print "printing the hartree for test porpouses"
                 GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
         elif(options.KPFM_sample.lower().endswith(".cube") ):
@@ -132,21 +132,24 @@ if __name__=="__main__":
             V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
 
             
-        dV_kpfm = (V_kpfm - V_v0_aux)#/(options.Vref)
+        dV_kpfm = (V_kpfm - V_v0_aux)#/(Vref)
 
     if (options.KPFM_tip is not None):
         sigma = PPU.params['sigma']
         print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
 
         if (options.KPFM_tip.lower().endswith(".xsf")):
+            Vref = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
-            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         elif(options.KPFM_tip.lower().endswith(".cube")):
+            Vref = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
-            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)#/(options.Vref)
+            drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
+            Vref = -0.1
             if ( PPU.params['probeType'] == '8' ):
                 drho_kpfm={'pz':0.095} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 pol_sigma = 0.6
@@ -177,8 +180,8 @@ if __name__=="__main__":
         print "Linear E to V"
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
         for i in range(nDim[0]):
-            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((options.Vref)*(zpos[i]+0.1))
-            FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((options.Vref)*(zpos[i]+0.1))        
+            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref)*(zpos[i]+0.1))
+            FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((Vref)*(zpos[i]+0.1))        
 
         print ">>> saving electrostatic forcefiled ... "
         GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
