@@ -41,6 +41,7 @@ if __name__=="__main__":
     parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
     parser.add_option("--linEtoV", action="store", type="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
     parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
+    parser.add_option("--tip_sigma", action="store", type="float",  help="adjuts the sigma of the tip", default=0.7)
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
@@ -190,7 +191,7 @@ if __name__=="__main__":
 
     print ">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... "
     #FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],Fmax=10.0,computeVpot=options.energy,Vmax=10, tilt=opt_dict['tilt'] )
-    FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=0.3 )
+    FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=options.tip_sigma )
 
     print ">>> saving electrostatic forcefiled ... "
     
