@@ -152,8 +152,12 @@ if __name__=="__main__":
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             Vref = -0.1
             if ( PPU.params['probeType'] == '8' ):
-                drho_kpfm={'pz':0.095} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
-                pol_sigma = 0.6
+                #drho_kpfm={'pz':0.095} # comparing charges, 0.09 * 0.2 looks the same as COAg111
+                #pol_sigma = 0.6
+                #drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                #pol_sigma = 0.7
+                drho_kpfm={'pz':1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                pol_sigma = 0.5
                 print " Select CO-tip polarization "
             if ( PPU.params['probeType'] == '47' ):
                 drho_kpfm={'pz':0.21875} 
