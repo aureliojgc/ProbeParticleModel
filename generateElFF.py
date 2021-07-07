@@ -156,8 +156,8 @@ if __name__=="__main__":
                 #pol_sigma = 0.6
                 #drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 #pol_sigma = 0.7
-                drho_kpfm={'pz':1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
-                pol_sigma = 0.5
+                drho_kpfm={'pz':0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                pol_sigma = 0.4
                 print " Select CO-tip polarization "
             if ( PPU.params['probeType'] == '47' ):
                 drho_kpfm={'pz':0.21875} 
