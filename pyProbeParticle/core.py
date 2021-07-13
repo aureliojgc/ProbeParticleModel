@@ -12,9 +12,19 @@ import cpp_utils
 # ==============================
 
 cpp_name='ProbeParticle'
+load_fail=True
+error_load_counter = 0   # test porpuses
 #cpp_utils.compile_lib( cpp_name  )
-cpp_utils.make( "PP"  )
-lib    = ctypes.CDLL(  cpp_utils.CPP_PATH + "/" + cpp_name + cpp_utils.lib_ext )    # load dynamic librady object using ctypes 
+while (load_fail and (error_load_counter<10)):
+    try:
+        cpp_utils.make( "PP"  )
+        lib    = ctypes.CDLL(  cpp_utils.CPP_PATH + "/" + cpp_name + cpp_utils.lib_ext )    # load dynamic librady object using ctypes 
+        load_fail=False
+        print "All good with the c++ libraries"  # test porpuses
+    except:
+        load_fail=True
+        error_load_counter = error_load_counter + 1  # test porpuses
+        print "c++ library failed and retry"   # test porpuses
 
 # define used numpy array types for interfacing with C++
 
