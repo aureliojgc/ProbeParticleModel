@@ -65,7 +65,9 @@ elif(options.tip.lower().endswith(".cube") ):
     rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, hartree=False, borh = options.borh)
 elif(options.tip.lower().endswith("fit") ):
     print "generating sample with s orbital"
-    rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, borh=options.borh, modulo=8.0, sigma=0.42)
+#    rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, borh=options.borh, modulo=8.0, sigma=0.42)
+    rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, modulo=8.0, sigma=0.42)
+
 
 #print ">>> Loading sample from ", options.sample, " ... "
 #rhoS, lvecS, nDimS, headS = GU.loadXSF( options.sample )

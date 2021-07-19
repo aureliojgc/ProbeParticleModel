@@ -303,7 +303,7 @@ def loadCUBE(fname, hartree=True, borh = False):
 		FF*=Hartree2eV
 	elif borh:
 		print "Charge density is read in a.u. and convert to Ang"
-		FF*=(1/bohrRadius2angstroem**3)
+		FF=FF*(1.0/bohrRadius2angstroem**3)
 	return FF,lvec, nDim, head
 #================ WSxM output
 
