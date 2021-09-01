@@ -330,7 +330,7 @@ def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, 
         '''
 
         GU.saveXSF( "rhoTip.xsf", rho, lvec )
-        rho[:,:,:] = rho[::-1,::-1,::-1].copy() # turn probe backwards for convolution for coherence with DFT calculated tip. Do not change anything for dz2 or s, but dipolar tips like pz for KPFM does.
+        #rho[:,:,:] = rho[::-1,::-1,::-1].copy() # turn probe backwards for convolution for coherence with DFT calculated tip. Do not change anything for dz2 or s, but dipolar tips like pz for KPFM does.
 
 
     else:

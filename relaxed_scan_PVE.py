@@ -109,6 +109,7 @@ if __name__=="__main__":
         FFvdW[0,:,:,:],FFvdW[1,:,:,:] = rotFF( FFvdW[0,:,:,:],FFvdW[1,:,:,:], opt_dict['rotate'] )
     except IOError:
         FFvdW, lvec, nDim = GU.load_vec_field( "FFLJ" , data_format=options.data_format)
+        FFvdW[0,:,:,:],FFvdW[1,:,:,:] = rotFF( FFvdW[0,:,:,:],FFvdW[1,:,:,:], opt_dict['rotate'] )
 
 
     if ( charged_system == True):

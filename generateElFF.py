@@ -118,6 +118,7 @@ if __name__=="__main__":
 
         V_kpfm=None
         if(options.KPFM_sample.lower().endswith(".xsf") ):
+            Vref_s = options.Vref
             print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
             print "Use loadXSF"
             V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
@@ -128,46 +129,52 @@ if __name__=="__main__":
                 print "printing the hartree for test porpouses"
                 GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
         elif(options.KPFM_sample.lower().endswith(".cube") ):
+            Vref_s = options.Vref
             print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
             print "Use loadCUBE"
             V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
 
             
-        dV_kpfm = (V_kpfm - V_v0_aux)#/(Vref)
+        dV_kpfm = (V_kpfm - V_v0_aux)
 
     if (options.KPFM_tip is not None):
         sigma = PPU.params['sigma']
         print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
 
         if (options.KPFM_tip.lower().endswith(".xsf")):
-            Vref = options.Vref
+            Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         elif(options.KPFM_tip.lower().endswith(".cube")):
-            Vref = options.Vref
+            Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
-        if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
-            Vref = -0.1
+        if options.KPFM_tip in {'fit', 'dipole', 'pz'}: ##now the modules are negative because I can't turn the forces upside down afterwards as is done with DFT (it introduces an asimetry somehow)
+            Vref_t = -0.1
             if ( PPU.params['probeType'] == '8' ):
                 #drho_kpfm={'pz':0.095} # comparing charges, 0.09 * 0.2 looks the same as COAg111
                 #sigma = 0.6
                 #drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 #sigma = 0.7
-                drho_kpfm={'pz':0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.4
                 print " Select CO-tip polarization "
             if ( PPU.params['probeType'] == '47' ):
-                drho_kpfm={'pz':0.21875} 
+                drho_kpfm={'pz':-0.21875} 
                 sigma = 0.7
                 print " Select Ag polarization with decay sigma", sigma
             if ( PPU.params['probeType'] == '54' ):
-                drho_kpfm={'pz':0.250}
+                drho_kpfm={'pz':-0.250}
                 sigma = 0.8
                 print " Select Xe-tip polarization"
                         #Calculate ~V terms     
+        if options.KPFM_tip in {'fit_hard'}:
+            Vref_t = -0.1
+            if ( PPU.params['probeType'] == '8' ):
+                drho_kpfm={'pz':-1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                sigma = 0.4
         if options.tip_dens is not None:
             tip_aux_2 = PPU.params['tip'].copy()
         else:
@@ -185,8 +192,8 @@ if __name__=="__main__":
         print "Linear E to V"
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
         for i in range(nDim[0]):
-            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref)*(zpos[i]+0.1))
-            FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((Vref)*(zpos[i]+0.1))        
+            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref_s)*(zpos[i]+0.1))
+            FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((Vref_t)*(zpos[i]+0.1))        
 
         print ">>> saving electrostatic forcefiled ... "
         GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
