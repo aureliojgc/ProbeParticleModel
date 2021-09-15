@@ -42,6 +42,7 @@ if __name__=="__main__":
     parser.add_option("--linEtoV", action="store", type="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
     parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
     parser.add_option("--tip_sigma", action="store", type="float",  help="adjuts the sigma of the tip", default=0.7)
+    parser.add_option("--correct_core", action="store_true", default=False)
     (options, args) = parser.parse_args()
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
@@ -109,6 +110,11 @@ if __name__=="__main__":
             #subtractCoreDensities( rho_tip, lvec_tip, fname=options.tip_dens, valElDict=valElDict, Rcore=options.Rcore )
             PPH.subtractCoreDensities( rho_tip, lvec_tip, elems=elems_tip, Rs=Rs_tip, valElDict=valElDict, Rcore=options.Rcore, head=head_tip )
 
+        if options.correct_core:
+            Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.5 )
+            print Rs_tip,elems_tip
+            rho_tip = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.5)
+
         PPU.params['tip'] = rho_tip
 
     if (options.KPFM_sample is not None):
@@ -145,11 +151,17 @@ if __name__=="__main__":
             Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
+            if options.correct_core:
+                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.5 )
+                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,elems_tip,0.3)
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         elif(options.KPFM_tip.lower().endswith(".cube")):
             Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
+            if options.correct_core:
+                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.5 )
+                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,elems_tip,0.3)            
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}: ##now the modules are negative because I can't turn the forces upside down afterwards as is done with DFT (it introduces an asimetry somehow)
             Vref_t = -0.1

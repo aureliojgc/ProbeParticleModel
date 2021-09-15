@@ -5,6 +5,7 @@ from   ctypes import c_int, c_double, c_char_p
 import ctypes
 import os
 import cpp_utils
+import time
 
 
 # ============================== 
@@ -15,10 +16,18 @@ Hartree2eV           = 27.211396132
 # ============================== interface to C++ core 
 
 cpp_name='GridUtils'
+load_fail=True
+error_load_counter = 0
 #cpp_utils.compile_lib( cpp_name  )
-cpp_utils.make("GU")
-lib    = ctypes.CDLL(  cpp_utils.CPP_PATH + "/" + cpp_name + cpp_utils.lib_ext )     # load dynamic librady object using ctypes 
-
+while (load_fail and (error_load_counter<20)):
+	try:
+		cpp_utils.make("GU")
+		lib    = ctypes.CDLL(  cpp_utils.CPP_PATH + "/" + cpp_name + cpp_utils.lib_ext )     # load dynamic librady object using ctypes 
+		load_fail=False
+	except:
+		load_fail=True
+		error_load_counter = error_load_counter + 1
+		time.sleep(1.0*error_load_counter)
 # define used numpy array types for interfacing with C++
 
 array1i = np.ctypeslib.ndpointer(dtype=np.int32,  ndim=1, flags='CONTIGUOUS')
