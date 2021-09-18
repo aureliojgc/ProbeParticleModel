@@ -111,9 +111,9 @@ if __name__=="__main__":
             PPH.subtractCoreDensities( rho_tip, lvec_tip, elems=elems_tip, Rs=Rs_tip, valElDict=valElDict, Rcore=options.Rcore, head=head_tip )
 
         if options.correct_core:
-            Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.5 )
+            Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.3 )
             print Rs_tip,elems_tip
-            rho_tip = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.5)
+            rho_tip = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.2)
 
         PPU.params['tip'] = rho_tip
 
@@ -152,16 +152,16 @@ if __name__=="__main__":
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
             if options.correct_core:
-                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=0.5 )
-                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.5)
+                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=0.3 )
+                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.2)
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         elif(options.KPFM_tip.lower().endswith(".cube")):
             Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
             if options.correct_core:
-                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=0.5 )
-                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.5)           
+                Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=0.3 )
+                rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.2)           
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}: ##now the modules are negative because I can't turn the forces upside down afterwards as is done with DFT (it introduces an asimetry somehow)
             Vref_t = -0.1
