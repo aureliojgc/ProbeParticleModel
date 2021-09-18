@@ -87,9 +87,12 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
     pbc = 0 # int(2*tol/delta)
 
     for iatm in range(atoms_tip.shape[0]):
+        print iatm
 
         iatm_pos = pos2index(np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]]), nDim, lvec)
         atom_pos = np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]])
+        list_points = None
+        list_dist = None
 
         print iatm_pos, atom_pos
 
@@ -104,11 +107,17 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
                     if (dist < tol):
                         print dist
                         if list_points is None:
-                            list_points = np.array([i,j,k])
-                            list_dist = np.array(dist)
+                            list_points = np.zeros([1,3], dtype=int)
+                            list_dist = np.zeros([1], dtype=float)
+                            list_points[0,:] = [i,j,k]
+                            list_dist[0] = dist
                         else:
-                            np.append(list_points, [i,j,k], axis=0)
-                            np.append(list_dist, dist, axis=0)
+                            list_points_aux = np.zeros([1,3], dtype=int)
+                            list_dist_aux = np.zeros([1], dtype=float)
+                            list_points_aux[0,:] = [i,j,k]
+                            list_dist_aux[0] = dist
+                            np.append(list_points, list_points_aux, axis=0)
+                            np.append(list_dist, list_dist_aux, axis=0)
         
         media = 0.0
         Norm = 0.0
@@ -122,7 +131,7 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
 
         for i in range(list_dist.shape[0]):
 
-            media = media + list_dist[i]*V[ list_points[2], list_points[1], list_points[0] ]
+            media = media + list_dist[i]*V[ list_points[i,2], list_points[i,1], list_points[i,0] ]
             Norm = Norm + list_dist[i]
 
         #    if (list_points[0]>i_max): i_max = list_points[0]
@@ -136,9 +145,10 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
         #media_ring = ( V[i_min,iatm_pos[1],iatm_pos[2]] + V[i_max,iatm_pos[1],iatm_pos[2]] + V[iatm_pos[0],j_min,iatm_pos[2]] + V[iatm_pos[0],j_max,iatm_pos[2]] + V[iatm_pos[0],iatm_pos[1],k_min] + V[iatm_pos[0],iatm_pos[2],k_max] )/6.0
 
         for i in range(list_dist.shape[0]):
-            r = index2pos([list_points[0], list_points[1], list_points[2]],nDim,lvec)
+            r = index2pos([list_points[i,0], list_points[i,1], list_points[i,2]],nDim,lvec)
         #    V_corrected = media + (media_ring - media)*((r/tol)**2)
-            V_corrected = media + media*((tol - dist)/tol)*0.1
+            V_corrected[list_points[i,2], list_points[i,1], list_points[i,0]] = media + media*((tol - dist)/tol)*0.1
+            #V_corrected[list_points[i,2], list_points[i,1], list_points[i,0]] = media + media*((tol - dist)/tol)*0.1
 
 
         print iatm_pos, atom_pos
@@ -149,7 +159,7 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
         print list_points
         print list_dist
     print "saving Corrected tip"
-    GU.saveXSF( "Corrected_tip.xsf", V, lvec )
+    GU.saveXSF( "Corrected_tip.xsf", V_corrected, lvec )
     return V_corrected
 
 
