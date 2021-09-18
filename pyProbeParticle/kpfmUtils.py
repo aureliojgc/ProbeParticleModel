@@ -106,20 +106,25 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
                     dist = np.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
                     #print i,j,k,dist
                     if (dist < tol):
-                        print dist, i, j ,k
                         if list_points is None:
+                            print "initiate" , dist, i, j ,k
                             list_points = np.zeros([1,3], dtype=int)
                             list_dist = np.zeros([1], dtype=float)
                             list_points[0,:] = [i,j,k]
                             list_dist[0] = dist
                         else:
+                            print "append" , dist, i, j ,k
                             list_points_aux = np.zeros([1,3], dtype=int)
                             list_dist_aux = np.zeros([1], dtype=float)
                             list_points_aux[0,:] = [i,j,k]
                             list_dist_aux[0] = dist
-                            np.append(list_points, list_points_aux, axis=0)
-                            np.append(list_dist, list_dist_aux, axis=0)
-        
+                            list_points=np.append(list_points, list_points_aux, axis=0)
+                            list_dist=np.append(list_dist, list_dist_aux, axis=0)
+        print "list_points"
+        print list_points
+        print "list_dist"
+        print list_dist
+
         media = 0.0
         Norm = 0.0
 
@@ -146,6 +151,7 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
         #media_ring = ( V[i_min,iatm_pos[1],iatm_pos[2]] + V[i_max,iatm_pos[1],iatm_pos[2]] + V[iatm_pos[0],j_min,iatm_pos[2]] + V[iatm_pos[0],j_max,iatm_pos[2]] + V[iatm_pos[0],iatm_pos[1],k_min] + V[iatm_pos[0],iatm_pos[2],k_max] )/6.0
 
         for i in range(list_dist.shape[0]):
+            print i
             r = index2pos([list_points[i,0], list_points[i,1], list_points[i,2]],nDim,lvec)
         #    V_corrected = media + (media_ring - media)*((r/tol)**2)
             #V_corrected[list_points[i,2], list_points[i,1], list_points[i,0]] = media + media*((tol - dist)/tol)*0.1
@@ -161,8 +167,11 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
         print list_points
         print list_dist
     print "saving Corrected tip"
+    np.savetxt('profile', np.array(V[:,0,0]) )
     GU.saveXSF( "Corrected_tip.xsf", V_corrected, lvec )
+    np.savetxt('profile_corrected', np.array(V_corrected[:,0,0]) )
     GU.saveXSF( "Corrected_tip_zero.xsf", V_corrected_zero, lvec )
+    np.savetxt('profile_corrected_zero', np.array(V_corrected_zero[:,0,0]) )
 
     return V_corrected_zero
 
