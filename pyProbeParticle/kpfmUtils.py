@@ -163,6 +163,6 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
     GU.saveXSF( "Corrected_tip.xsf", V_corrected, lvec )
     GU.saveXSF( "Corrected_tip_zero.xsf", V_corrected_zero, lvec )
 
-    return V_corrected
+    return V_corrected_zero
 
 
