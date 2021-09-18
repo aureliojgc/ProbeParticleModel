@@ -106,7 +106,7 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
                     dist = np.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
                     #print i,j,k,dist
                     if (dist < tol):
-                        print dist
+                        print dist, i, j ,k
                         if list_points is None:
                             list_points = np.zeros([1,3], dtype=int)
                             list_dist = np.zeros([1], dtype=float)
@@ -150,6 +150,7 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip,tol):
         #    V_corrected = media + (media_ring - media)*((r/tol)**2)
             #V_corrected[list_points[i,2], list_points[i,1], list_points[i,0]] = media + media*((tol - dist)/tol)*0.1
             V_corrected[list_points[i,2], list_points[i,1], list_points[i,0]] = media
+            print "making point" , list_points[i,2], list_points[i,1], list_points[i,0] , "zero"
             V_corrected_zero[list_points[i,2], list_points[i,1], list_points[i,0]] = 0.0
 
         print iatm_pos, atom_pos
