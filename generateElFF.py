@@ -113,7 +113,7 @@ if __name__=="__main__":
         if options.correct_core:
             Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=0.3 )
             print Rs_tip,elems_tip
-            rho_tip = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,0.2)
+            rho_tip = kpfmU.core_correction(rho_tip,lvec_tip,nDim_tip,Rs_tip,elems_tip,0.2)
 
         PPU.params['tip'] = rho_tip
 
