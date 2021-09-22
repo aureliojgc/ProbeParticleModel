@@ -299,7 +299,7 @@ def potential2forces( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, tilt
     return Fx,Fy,Fz
 
 
-def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, doForce=True, doPot=False, deleteV=True, tilt=0.0 ):
+def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, doForce=True, doPot=False, deleteV=True, tilt=0.0, soft=False ):
     print '--- Preprocessing ---'
     sampleSize = getSampleDimensions( lvec )
     dims = (nDim[2], nDim[1], nDim[0])
@@ -340,6 +340,8 @@ def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, 
     if doForce:
         if(verbose>0): print '--- prepare Force transforms ---'
         zetaX,zetaY,zetaZ,detLmatInv = getForceTransform(sampleSize, dims, dd, X, Y, Z )
+    if soft :
+        gauss = getProbeDensity(sampleSize, X, Y, Z, dd, sigma=0.1, multipole_dict={'s':1.0} )
     del X,Y,Z
     E=None;Fx=None;Fy=None;Fz=None;
     if(verbose>0): print '--- forward FFT ---'
@@ -348,7 +350,13 @@ def potential2forces_mem( V, lvec, nDim, sigma = 0.7, rho=None, multipole=None, 
     #rhoFFT    =    del rho
     #convFFT   = VFFT*rhoFFT;        del VFFT,rhoFFT
     gc.collect()
-    convFFT    = np.fft.fftn(V) * np.fft.fftn(rho);
+    if soft :
+        print "softening"
+        convFFT    = np.fft.fftn(V) * np.fft.fftn(rho) * np.fft.fftn(gauss)
+        del gauss
+    else:
+        print "not softening"
+        convFFT    = np.fft.fftn(V) * np.fft.fftn(rho);
     if deleteV: del V
     gc.collect()
     if doPot:
