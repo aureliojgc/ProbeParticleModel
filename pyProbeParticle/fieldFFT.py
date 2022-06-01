@@ -30,9 +30,9 @@ def getMGrid(dims, dd):
     nDim = [dims[2], dims[1], dims[0]]
     XYZ = np.mgrid[0:nDim[0],0:nDim[1],0:nDim[2]].astype(float)
     
-    xshift = nDim[2]/2;  xshift_ = xshift;
-    yshift = nDim[1]/2;  yshift_ = yshift;
-    zshift = nDim[0]/2;  zshift_ = zshift;
+    xshift = int(nDim[2]/2);  xshift_ = xshift;
+    yshift = int(nDim[1]/2);  yshift_ = yshift;
+    zshift = int(nDim[0]/2);  zshift_ = zshift;
     
     if( nDim[2]%2 != 0 ):  xshift_ += 1.0
     if( nDim[1]%2 != 0 ):  yshift_ += 1.0

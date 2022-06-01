@@ -190,7 +190,7 @@ lib.ReadNumsUpTo_C.argtypes  = [c_char_p, array1d, array1i, c_int]
 lib.ReadNumsUpTo_C.restype   = c_int
 def readNumsUpTo(filename, dimensions, noline):
 	N_arry=np.zeros( (dimensions[0]*dimensions[1]*dimensions[2]), dtype = np.double )
-	lib.ReadNumsUpTo_C( filename, N_arry, dimensions, noline )
+	lib.ReadNumsUpTo_C( filename.encode(), N_arry, dimensions, noline )
 	return N_arry
 
 # =================== binary dbl (double)
