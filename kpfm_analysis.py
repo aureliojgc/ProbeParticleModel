@@ -82,7 +82,7 @@ opt_dict = vars(options)
 PPU.loadParams( 'params.ini' )
 PPU.apply_options(opt_dict)
 
-print " >> OVEWRITING SETTINGS by command line arguments  "
+print(" >> OVEWRITING SETTINGS by command line arguments  ")
 # Ks
 if opt_dict['krange'] is not None:
     Ks = np.linspace( opt_dict['krange'][0], opt_dict['krange'][1], opt_dict['krange'][2] )
@@ -114,7 +114,7 @@ if opt_dict['image_point']:
 #else if multiple image points:
     #here deal with a list of points
 else:
-    print 'Scan point unspecified'
+    print('Scan point unspecified')
 
 Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], opt_dict['Vrange'][2] )
 

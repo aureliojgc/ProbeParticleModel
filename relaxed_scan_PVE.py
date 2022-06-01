@@ -12,7 +12,7 @@ import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.cpp_utils      as cpp_utils
 
 #import PPPlot 		# we do not want to make it dempendent on matplotlib
-print "Amplitude ", PPU.params['Amplitude']
+print("Amplitude ", PPU.params['Amplitude'])
 
 def rotVec( v, a ):
     ca=np.cos(a);      sa=np.sin(a)
@@ -89,14 +89,14 @@ if __name__=="__main__":
             aplied_bias=True       
     
     if (aplied_bias == True):
-        print "Vs   =", Vs
-    print "Ks   =", Ks 
-    print "Qs   =", Qs 
+        print("Vs   =", Vs)
+    print("Ks   =", Ks) 
+    print("Qs   =", Qs) 
     #print "Amps =", Amps 
     PPU.params["Apauli"] = options.Apauli
-    print "Apauli",PPU.params["Apauli"]
+    print("Apauli",PPU.params["Apauli"])
 
-    print " ============= RUN  "
+    print(" ============= RUN  ")
     FFvdW, FFpauli, FFel, FFboltz, FFkpfm_t0sV, FFkpfm_tVs0=None,None,None,None,None,None
 
 
@@ -104,7 +104,7 @@ if __name__=="__main__":
         FFpauli, lvec, nDim = GU.load_vec_field( "FFpauli" ,data_format=options.data_format)
         FFpauli[0,:,:,:],FFpauli[1,:,:,:] = rotFF( FFpauli[0,:,:,:],FFpauli[1,:,:,:], opt_dict['rotate'] )
 
-        print " load Lenard-Jones Force-field "
+        print(" load Lenard-Jones Force-field ")
         FFvdW, lvec, nDim = GU.load_vec_field( "FFvdW" , data_format=options.data_format)
         FFvdW[0,:,:,:],FFvdW[1,:,:,:] = rotFF( FFvdW[0,:,:,:],FFvdW[1,:,:,:], opt_dict['rotate'] )
     except IOError:
@@ -113,15 +113,15 @@ if __name__=="__main__":
 
 
     if ( charged_system == True):
-        print " load Electrostatic Force-field "
+        print(" load Electrostatic Force-field ")
         FFel, lvec, nDim = GU.load_vec_field( "FFel" ,data_format=options.data_format)
         FFel[0,:,:,:],FFel[1,:,:,:] = rotFF( FFel[0,:,:,:],FFel[1,:,:,:], opt_dict['rotate'] )
     if (options.boltzmann  or options.bI) :
-        print " load Boltzmann Force-field "
+        print(" load Boltzmann Force-field ")
         FFboltz, lvec, nDim = GU.load_vec_field( "FFboltz", data_format=options.data_format)
         FFboltz[0,:,:,:],FFboltz[1,:,:,:] = rotFF( FFboltz[0,:,:,:],FFboltz[1,:,:,:], opt_dict['rotate'] )
     if  (( aplied_bias == True) or (opt_dict['easy_KPFM_b'])):
-        print " load Electrostatic contribution from aplied bias"
+        print(" load Electrostatic contribution from aplied bias")
         FFkpfm_t0sV, lvec, nDim = GU.load_vec_field( "FFkpfm_t0sV" ,data_format=options.data_format)
         FFkpfm_tVs0, lvec, nDim = GU.load_vec_field( "FFkpfm_tVs0" ,data_format=options.data_format)
 
@@ -139,7 +139,7 @@ if __name__=="__main__":
 
     lvec[1,:] = rotVec( lvec[1,:], opt_dict['rotate'] ) 
     lvec[2,:] = rotVec( lvec[2,:], opt_dict['rotate'] ) 
-    print lvec
+    print(lvec)
     PPU.lvec2params( lvec )
 
     if opt_dict['easy_KPFM_b']:
@@ -157,7 +157,7 @@ if __name__=="__main__":
                     dirname = "Q%1.2fK%1.2fV%1.2f" %(Q,K,Vx)
                 else:
                     dirname = "Q%1.2fK%1.2f" %(Q,K)
-                print " relaxed_scan for ", dirname
+                print(" relaxed_scan for ", dirname)
                 if not os.path.exists( dirname ):
                     os.makedirs( dirname )
                  
@@ -168,7 +168,7 @@ if __name__=="__main__":
                 GU.save_scal_field( dirname+'/OutFz', fzs, lvecScan, data_format=options.data_format )
                 if opt_dict['vib'] >= 0:
                     which = opt_dict['vib']
-                    print " === computing eigenvectors of dynamical matix which=%i ddisp=%f" %(which,PPU.params['ddisp'])
+                    print(" === computing eigenvectors of dynamical matix which=%i ddisp=%f" %(which,PPU.params['ddisp']))
                     xTips,yTips,zTips,lvecScan = PPU.prepareScanGrids( )
                     rTips = np.array(np.meshgrid(xTips,yTips,zTips)).transpose(3,1,2,0).copy()
                     evals,evecs = PPC.stiffnessMatrix( rTips.reshape((-1,3)), PPpos.reshape((-1,3)), which=which, ddisp=PPU.params['ddisp'] )
@@ -182,7 +182,7 @@ if __name__=="__main__":
                 if opt_dict['pos']:
                     GU.save_vec_field(dirname+'/PPpos', PPpos, lvecScan, data_format=options.data_format )
                 if options.bI:
-                    print "Calculating current from tip to the Boltzmann particle:"
+                    print("Calculating current from tip to the Boltzmann particle:")
                     I_in, lvec, nDim = GU.load_scal_field('I_boltzmann',
                     data_format=iptions.data_format)
                     I_out = GU.interpolate_cartesian( I_in, PPpos, cell=lvec[1:,:], result=None ) 

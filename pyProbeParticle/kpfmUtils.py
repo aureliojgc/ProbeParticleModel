@@ -4,7 +4,7 @@ import numpy as np
 from numpy.core.numeric import Inf
 from numpy.lib.function_base import piecewise
 from scipy.optimize import curve_fit
-import GridUtils      as GU
+from . import GridUtils      as GU
 
 
 def correct_background(V,Vbias,lvec,Vac_lvl):
@@ -32,7 +32,7 @@ def correct_background(V,Vbias,lvec,Vac_lvl):
     params = curve_fit(correcttion_function,z[iz_min:iz_max],wf[iz_min:iz_max],p0=param0)
 
     [a,b,c,d,z0] = params[0]
-    print params[0]
+    print(params[0])
 
     y = correcttion_function(z, a, b, c, d, z0)
 
@@ -126,14 +126,14 @@ def TD_gaussian_fit(atom_pos, points_positions, points_value, A0, point2plot ):
 
 
 def core_correction(V,lvec,nDim,Rs_tip,elems_tip, tol_in ,tol_out):
-    print "V with shape ", V.shape, "and nDim", nDim 
+    print("V with shape ", V.shape, "and nDim", nDim) 
     V_corrected = V.copy()
     atoms_tip = np.array(Rs_tip)
 
     delta = np.array([lvec[1,0]/nDim[2], lvec[2,1]/nDim[1], lvec[3,2]/nDim[0]])
 
     for iatm in range(atoms_tip.shape[0]):
-        print iatm
+        print(iatm)
 
         iatm_pos = pos2index(np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]]), nDim, lvec)
         atom_pos = np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]])
@@ -235,15 +235,15 @@ def core_correction(V,lvec,nDim,Rs_tip,elems_tip, tol_in ,tol_out):
 
 
 def core_correction_oldnew(V,lvec,nDim,Rs_tip,elems_tip,tol):
-    print pbc(301,nDim[0])
-    print "V with shape ", V.shape, "and nDim", nDim 
+    print(pbc(301,nDim[0]))
+    print("V with shape ", V.shape, "and nDim", nDim) 
     V_corrected = V.copy()
     atoms_tip = np.array(Rs_tip)
 
     delta = np.array([lvec[1,0]/nDim[2], lvec[2,1]/nDim[1], lvec[3,2]/nDim[0]])
 
     for iatm in range(atoms_tip.shape[0]):
-        print iatm
+        print(iatm)
 
         iatm_pos = pos2index(np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]]), nDim, lvec)
         atom_pos = np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]])
@@ -317,9 +317,9 @@ def core_correction_oldnew(V,lvec,nDim,Rs_tip,elems_tip,tol):
         #media_ring_y = ( V[iatm_pos_pbc[2],j_min_pbc,iatm_pos_pbc[0]] + V[iatm_pos_pbc[2],j_max_pbc,iatm_pos_pbc[0]] )/2.0
         #media_ring_z = ( V[k_min_pbc,iatm_pos_pbc[1],iatm_pos_pbc[0]] + V[k_max_pbc,iatm_pos_pbc[2],iatm_pos_pbc[0]] )/2.0
         Centro = (media_ring_x + media_ring_y + media_ring_z)/3.0
-        print "media and values x", media_ring_x , V[iatm_pos_pbc[2],iatm_pos_pbc[1],i_min_pbc] , V[iatm_pos_pbc[2],iatm_pos_pbc[1],i_max_pbc] 
-        print "media and values y", media_ring_y , V[iatm_pos_pbc[2],j_min_pbc,iatm_pos_pbc[0]] , V[iatm_pos_pbc[2],j_max_pbc,iatm_pos_pbc[0]]
-        print "media and values z", media_ring_z , V[k_min_pbc,iatm_pos_pbc[1],iatm_pos_pbc[0]] , V[k_max_pbc,iatm_pos_pbc[2],iatm_pos_pbc[0]]
+        print("media and values x", media_ring_x , V[iatm_pos_pbc[2],iatm_pos_pbc[1],i_min_pbc] , V[iatm_pos_pbc[2],iatm_pos_pbc[1],i_max_pbc]) 
+        print("media and values y", media_ring_y , V[iatm_pos_pbc[2],j_min_pbc,iatm_pos_pbc[0]] , V[iatm_pos_pbc[2],j_max_pbc,iatm_pos_pbc[0]])
+        print("media and values z", media_ring_z , V[k_min_pbc,iatm_pos_pbc[1],iatm_pos_pbc[0]] , V[k_max_pbc,iatm_pos_pbc[2],iatm_pos_pbc[0]])
 
         data2fit_x = np.array([
             index2pos( [iatm_pos[2],iatm_pos[1],i_min] ,nDim,lvec),
@@ -348,7 +348,7 @@ def core_correction_oldnew(V,lvec,nDim,Rs_tip,elems_tip,tol):
                 pbc(list_points[i,2],nDim[0]), 
                 pbc(list_points[i,1],nDim[1]), 
                 pbc(list_points[i,0],nDim[2]) ] = TD_gaussian_fit(atom_pos, data2fit_x, data2fit_y, Centro, [list_points[i,0], list_points[i,1], list_points[i,2]])
-            print "fitted value" , TD_gaussian_fit(atom_pos, data2fit_x, data2fit_y, Centro, [list_points[i,0], list_points[i,1], list_points[i,2]])
+            print("fitted value" , TD_gaussian_fit(atom_pos, data2fit_x, data2fit_y, Centro, [list_points[i,0], list_points[i,1], list_points[i,2]]))
 
     GU.saveXSF( "Corrected_tip.xsf", V_corrected, lvec )
     return V_corrected
@@ -365,19 +365,19 @@ def core_correction_old(V,lvec,nDim,Rs_tip,elems_tip,tol):
     pbc = 0 # int(2*tol/delta)
 
     for iatm in range(atoms_tip.shape[0]):
-        print iatm
+        print(iatm)
 
         iatm_pos = pos2index(np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]]), nDim, lvec)
         atom_pos = np.array([atoms_tip[iatm,0],atoms_tip[iatm,1],atoms_tip[iatm,2]])
         list_points = None
         list_dist = None
 
-        print iatm_pos, atom_pos
+        print(iatm_pos, atom_pos)
         check_area = np.zeros([3], dtype=int)
         check_area[0] = int((3*tol)/delta[0])
         check_area[1] = int((3*tol)/delta[1])
         check_area[2] = int((3*tol)/delta[2])
-        print "check area" , check_area
+        print("check area" , check_area)
 #        for i in range(0, nDim[2], 1):
 #            for j in range(0, nDim[1], 1):
 #                for k in range(0, nDim[0], 1):
@@ -387,7 +387,7 @@ def core_correction_old(V,lvec,nDim,Rs_tip,elems_tip,tol):
             [iatm_pos[1]-check_area[1], iatm_pos[1]+check_area[1]],
             [iatm_pos[2]-check_area[2], iatm_pos[2]+check_area[2]]
             ] )
-        print 'limist!!!!!!!!!!!!!!!111', limits
+        print('limist!!!!!!!!!!!!!!!111', limits)
         
         if (limits[0,1] > nDim[2]): limits[0,1] = nDim[2]
         if (limits[1,1] > nDim[1]): limits[1,1] = nDim[1]
@@ -464,9 +464,9 @@ def core_correction_old(V,lvec,nDim,Rs_tip,elems_tip,tol):
             #print "making point" , list_points[i,2], list_points[i,1], list_points[i,0] , "zero"
             V_corrected_zero[list_points[i,2], list_points[i,1], list_points[i,0]] = 0.0
 
-        print iatm_pos, atom_pos
+        print(iatm_pos, atom_pos)
 
-        print "MEDIA", media
+        print("MEDIA", media)
 
         #print "list point and distances"
         #print list_points
@@ -474,7 +474,7 @@ def core_correction_old(V,lvec,nDim,Rs_tip,elems_tip,tol):
     #V_corrected[V_corrected < -0.5] = -0.5
     #V_corrected_zero[V_corrected_zero < -0.5] = -0.5
 
-    print "saving Corrected tip"
+    print("saving Corrected tip")
     np.savetxt('profile', np.array(V[:,0,0]) )
     GU.saveXSF( "Corrected_tip.xsf", V_corrected, lvec )
     np.savetxt('profile_corrected', np.array(V_corrected[:,0,0]) )

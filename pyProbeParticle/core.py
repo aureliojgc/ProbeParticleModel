@@ -4,8 +4,8 @@ import numpy as np
 from   ctypes import c_int, c_double, c_char_p
 import ctypes
 import os
-import common as PPU
-import cpp_utils
+from . import common as PPU
+from . import cpp_utils
 import time
 
 # ==============================
@@ -21,11 +21,11 @@ while (load_fail and (error_load_counter<20)):
         cpp_utils.make( "PP"  )
         lib    = ctypes.CDLL(  cpp_utils.CPP_PATH + "/" + cpp_name + cpp_utils.lib_ext )    # load dynamic librady object using ctypes 
         load_fail=False
-        print "All good with the c++ libraries"  # test porpuses
+        print("All good with the c++ libraries")  # test porpuses
     except:
         load_fail=True
         error_load_counter = error_load_counter + 1  # test porpuses
-        print "c++ library failed and retry"   # test porpuses
+        print("c++ library failed and retry")   # test porpuses
         time.sleep(1.0*error_load_counter)
 
 # define used numpy array types for interfacing with C++
@@ -61,7 +61,7 @@ def setGridCell( cell=None):
     if   cell.shape == (3,3): cell = cell.copy()
     elif cell.shape == (4,3): cell = cell[1:,:].copy()
     else: raise ValueError("cell has wrong format"); exit()
-    print "cell", cell
+    print("cell", cell)
     lib.setGridCell( cell )
 
 def setFF_shape( n_, cell ):
@@ -100,7 +100,7 @@ def setFF( cell=None, gridF=None, gridE=None ):
             PPU.params['gridC'],
         ]).copy()
     if n_ is not None:
-        print "setFF() n_ : ", n_
+        print("setFF() n_ : ", n_)
         setFF_shape( n_, cell )
     else:
         "Warrning : setFF shape not set !!! "
@@ -131,11 +131,11 @@ def setTip( lRadial=None, kRadial=None, rPP0=None, kSpring=None	):
         rPP0=np.array((PPU.params['r0Probe'][0],PPU.params['r0Probe'][1],0.0))
     if kSpring is  None: 
         kSpring=np.array((PPU.params['klat'],PPU.params['klat'][1],0.0))/-PPU.eVA_Nm 
-    print " IN setTip !!!!!!!!!!!!!! "
-    print " lRadial ", lRadial
-    print " kRadial ", kRadial
-    print " rPP0 ", rPP0
-    print " kSpring ", kSpring
+    print(" IN setTip !!!!!!!!!!!!!! ")
+    print(" lRadial ", lRadial)
+    print(" kRadial ", kRadial)
+    print(" rPP0 ", rPP0)
+    print(" kSpring ", kSpring)
     lib.setTip( lRadial, kRadial, rPP0, kSpring )
 
 #void setTipSpline( int n, double * xs, double * ydys ){  
@@ -175,7 +175,7 @@ lib.getMorseFF.restype   = None
 def getMorseFF( Rs, REs, alpha=None ):
     if alpha is None: alpha = PPU.params['aMorse']
     #print "PPU.params['aMorse']", PPU.params['aMorse']
-    print "getMorseFF: alpha: %g [1/A] ", alpha
+    print("getMorseFF: alpha: %g [1/A] ", alpha)
     natom = len(Rs) 
     lib.getMorseFF( natom, Rs, REs, alpha )
 

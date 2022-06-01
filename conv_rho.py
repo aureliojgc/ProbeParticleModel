@@ -51,20 +51,20 @@ parser.add_option( "--borh", action="store_true", help="the input is in a.u.", d
 #rho2, lvec2, nDim2, head2 = GU.loadXSF("./CO_/CHGCAR.xsf")
 
 if(options.sample.lower().endswith(".xsf") ):
-    print ">>> Loading sample from ", options.sample, " ... "
+    print(">>> Loading sample from ", options.sample, " ... ")
     rhoS, lvecS, nDimS, headS = GU.loadXSF(options.sample)
 elif(options.sample.lower().endswith(".cube") ):
-    print ">>> Loading sample from ", options.sample, " ... "
+    print(">>> Loading sample from ", options.sample, " ... ")
     rhoS, lvecS, nDimS, headS = GU.loadCUBE(options.sample, hartree=False, borh = options.borh)
 
 if(options.tip.lower().endswith(".xsf") ):
-    print ">>> Loading sample from ", options.sample, " ... "
+    print(">>> Loading sample from ", options.sample, " ... ")
     rhoT, lvecT, nDimT, headT = GU.loadXSF( options.tip    )
 elif(options.tip.lower().endswith(".cube") ):
-    print ">>> Loading sample from ", options.sample, " ... "
+    print(">>> Loading sample from ", options.sample, " ... ")
     rhoT, lvecT, nDimT, headT = GU.loadCUBE( options.tip, hartree=False, borh = options.borh)
 elif(options.tip.lower().endswith("fit") ):
-    print "generating sample with s orbital"
+    print("generating sample with s orbital")
 #    rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, borh=options.borh, modulo=8.0, sigma=0.42)
     rhoT, lvecT, nDimT, headT = generateCO_dens.generate_CO_density(lvecS, nDimS, headS, modulo=8.0, sigma=0.42)
 
@@ -82,7 +82,7 @@ handleAECCAR( options.tip,    lvecT, rhoT )
 
 if options.Bpower > 0.0:
     B = options.Bpower
-    print ">>> computing rho^B where B = ", B
+    print(">>> computing rho^B where B = ", B)
     #print " rhoS.min,max ",rhoS.min(), rhoS.max(), " rhoT.min,max ",rhoT.min(), rhoT.max()
     # NOTE: due to round-off error the density from DFT code is often negative in some voxels which produce NaNs after exponentiation; we need to correct this 
     if options.densityMayBeNegative:
@@ -95,13 +95,13 @@ if options.Bpower > 0.0:
         GU.saveXSF( "sample_density_pow_%03.3f.xsf" %B, rhoS, lvecS, head=headS )
         GU.saveXSF( "tip_density_pow_%03.3f.xsf" %B, rhoT, lvecT, head=headT )
 
-print ">>> Evaluating convolution E(R) = A*Integral_r ( rho_tip^B(r-R) * rho_sample^B(r) ) using FFT ... "
+print(">>> Evaluating convolution E(R) = A*Integral_r ( rho_tip^B(r-R) * rho_sample^B(r) ) using FFT ... ")
 Fx,Fy,Fz,E = fFFT.potential2forces_mem( rhoS, lvecS, nDimS, rho=rhoT, doForce=True, doPot=True, deleteV=True )
 
 PQ = options.Apauli
 
 namestr = options.output
-print ">>> Saving result of convolution to FF_",namestr,"_?.xsf ... "
+print(">>> Saving result of convolution to FF_",namestr,"_?.xsf ... ")
 
 # Density Overlap Model
 if options.energy:

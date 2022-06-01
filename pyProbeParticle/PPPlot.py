@@ -64,7 +64,7 @@ def plotImages(
     ):
     plt.rcParams.update({'font.size': 30})
     for ii,i in enumerate(slices):
-        print " plotting ", i
+        print(" plotting ", i)
         if symetric_map:
             limit = max(abs(np.min(F[i]-V0)), abs(np.max(F[i]-V0)) )
             vmin = -limit+V0
@@ -90,7 +90,7 @@ def plotVecFieldRG(
     atoms=None, bonds=None, atomSize=default_atom_size
     ):
     for ii,i in enumerate(slices):
-        print " plotting ", i
+        print(" plotting ", i)
         plt.figure( figsize=( 10,10 ) )
         HSBs,vmax = colorize_XY2RG(dXs[i],dYs[i])
         plt.imshow( HSBs, extent=extent, origin='image', interpolation=interpolation ) 
@@ -111,7 +111,7 @@ def plotDistortions(
     atoms=None, bonds=None, atomSize=default_atom_size
     ):
     for ii,i in enumerate(slices):
-        print " plotting ", i
+        print(" plotting ", i)
         plt.figure( figsize=figsize )
         plt.plot  ( X[i,::by,::by].flat, Y[i,::by,::by].flat, 'r.', markersize=markersize )
         if BG is not None:
@@ -136,7 +136,7 @@ def plotArrows(
     atoms=None, bonds=None, atomSize=default_atom_size
     ):
     for ii,i in enumerate(slices):
-        print " plotting ", i
+        print(" plotting ", i)
         plt.figure( figsize=figsize )
         #plt.plt.quiver( dX, dY, X, Y, C=C, width=width, scale=scale )
         plt.quiver(  Xs[::by,::by], Ys[::by,::by],  dX[::by,::by], dY[::by,::by], color = 'k', headlength=10, headwidth=10, scale=15 )

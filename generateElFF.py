@@ -56,13 +56,13 @@ if __name__=="__main__":
     if os.path.isfile( 'params.ini' ):
         FFparams=PPU.loadParams( 'params.ini' ) 
     else:
-        print ">> LOADING default params.ini >> 's' ="  
+        print(">> LOADING default params.ini >> 's' =")  
         FFparams = PPU.loadParams( cpp_utils.PACKAGE_PATH+'/defaults/params.ini' )
     #PPU.loadParams( 'params.ini' )
     PPU.apply_options(opt_dict)    
 
     if os.path.isfile( 'atomtypes.ini' ):
-        print ">> LOADING LOCAL atomtypes.ini"  
+        print(">> LOADING LOCAL atomtypes.ini")  
         FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
     else:
         FFparams = PPU.loadSpecies( cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini' )
@@ -77,20 +77,20 @@ if __name__=="__main__":
 
     V=None
     if(options.input.lower().endswith(".xsf") ):
-        print ">>> loading Hartree potential from  ",options.input,"..."
-        print "Use loadXSF"
+        print(">>> loading Hartree potential from  ",options.input,"...")
+        print("Use loadXSF")
         V, lvec, nDim, head = GU.loadXSF(options.input)
     elif(options.input.lower().endswith(".cube") ):
-        print " loading Hartree potential from ",options.input,"..."
-        print "Use loadCUBE"
+        print(" loading Hartree potential from ",options.input,"...")
+        print("Use loadCUBE")
         V, lvec, nDim, head = GU.loadCUBE(options.input)
     
     if PPU.params['tip']==".py":
         #import tip
-        execfile("tip.py")
-        print tipMultipole
+        exec(compile(open("tip.py", "rb").read(), "tip.py", 'exec'))
+        print(tipMultipole)
         PPU.params['tip'] = tipMultipole
-        print " PPU.params['tip'] ", PPU.params['tip']
+        print(" PPU.params['tip'] ", PPU.params['tip'])
 
     if options.tip_dens is not None:
         '''
@@ -100,7 +100,7 @@ if __name__=="__main__":
         PPU.params['tip'] = rho_tip
         print " dens_tip check_sum Q =  ", np.sum( rho_tip )
         '''
-        print ">>> loading tip density from ",options.tip_dens,"..."
+        print(">>> loading tip density from ",options.tip_dens,"...")
 
         if (options.tip_dens.lower().endswith(".xsf")):
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
@@ -108,13 +108,13 @@ if __name__=="__main__":
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False, borh = options.borh )
 
         if options.Rcore > 0.0:
-            print ">>> subtracting core densities from rho_tip ... "
+            print(">>> subtracting core densities from rho_tip ... ")
             #subtractCoreDensities( rho_tip, lvec_tip, fname=options.tip_dens, valElDict=valElDict, Rcore=options.Rcore )
             PPH.subtractCoreDensities( rho_tip, lvec_tip, elems=elems_tip, Rs=Rs_tip, valElDict=valElDict, Rcore=options.Rcore, head=head_tip )
 
         if options.correct_core:
             Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=tol )
-            print Rs_tip,elems_tip
+            print(Rs_tip,elems_tip)
             rho_tip = kpfmU.core_correction(rho_tip,lvec_tip,nDim_tip,Rs_tip,elems_tip,tol)
 
         PPU.params['tip'] = rho_tip
@@ -127,19 +127,19 @@ if __name__=="__main__":
         V_kpfm=None
         if(options.KPFM_sample.lower().endswith(".xsf") ):
             Vref_s = options.Vref
-            print ">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"..."
-            print "Use loadXSF"
+            print(">>> loading Hartree potential  under bias from  ",options.KPFM_sample,"...")
+            print("Use loadXSF")
             V_kpfm, lvec, nDim, head = GU.loadXSF(options.KPFM_sample)
 
             if options.Vac is not None:
-                print "correcting bias on workfunction with a ramp function"
+                print("correcting bias on workfunction with a ramp function")
                 V_kpfm = kpfmU.correct_background(V_kpfm,Vref,lvec,options.Vac)
-                print "printing the hartree for test porpouses"
+                print("printing the hartree for test porpouses")
                 GU.saveXSF('corrected_hartree.xsf',V_kpfm,lvec , head=head)
         elif(options.KPFM_sample.lower().endswith(".cube") ):
             Vref_s = options.Vref
-            print " loading Hartree potential under bias from ",options.KPFM_sample,"..."
-            print "Use loadCUBE"
+            print(" loading Hartree potential under bias from ",options.KPFM_sample,"...")
+            print("Use loadCUBE")
             V_kpfm, lvec, nDim, head = GU.loadCUBE(options.KPFM_sample)
 
             
@@ -147,7 +147,7 @@ if __name__=="__main__":
 
     if (options.KPFM_tip is not None):
         sigma = PPU.params['sigma']
-        print ">>> loading tip density under bias from ",options.KPFM_tip,"..."
+        print(">>> loading tip density under bias from ",options.KPFM_tip,"...")
 
         if (options.KPFM_tip.lower().endswith(".xsf")):
             Vref_t = options.Vref
@@ -174,15 +174,15 @@ if __name__=="__main__":
                 #sigma = 0.7
                 drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 sigma = 0.4
-                print " Select CO-tip polarization "
+                print(" Select CO-tip polarization ")
             if ( PPU.params['probeType'] == '47' ):
                 drho_kpfm={'pz':-0.21875} 
                 sigma = 0.7
-                print " Select Ag polarization with decay sigma", sigma
+                print(" Select Ag polarization with decay sigma", sigma)
             if ( PPU.params['probeType'] == '54' ):
                 drho_kpfm={'pz':-0.250}
                 sigma = 0.8
-                print " Select Xe-tip polarization"
+                print(" Select Xe-tip polarization")
                         #Calculate ~V terms     
         if options.KPFM_tip in {'fit_hard'}:
             Vref_t = -0.1
@@ -203,22 +203,22 @@ if __name__=="__main__":
         #debug save tippol
 
 
-        print "Linear E to V"
+        print("Linear E to V")
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
         for i in range(nDim[0]):
             FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref_s)*(zpos[i]+0.1))
             FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((Vref_t)*(zpos[i]+0.1))        
 
-        print ">>> saving electrostatic forcefiled ... "
+        print(">>> saving electrostatic forcefiled ... ")
         GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
         GU.save_vec_field('FFkpfm_tVs0',FFkpfm_tVs0,lvec_samp ,data_format=options.data_format, head=head_samp)
 
 
-    print ">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... "
+    print(">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... ")
     #FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],Fmax=10.0,computeVpot=options.energy,Vmax=10, tilt=opt_dict['tilt'] )
     FFel,Eel=PPH.computeElFF(V,lvec,nDim,PPU.params['tip'],computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=options.tip_sigma )
 
-    print ">>> saving electrostatic forcefiled ... "
+    print(">>> saving electrostatic forcefiled ... ")
     
     GU.save_vec_field('FFel',FFel,lvec_samp ,data_format=options.data_format, head=head_samp)
     if options.energy:

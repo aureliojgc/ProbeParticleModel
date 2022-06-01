@@ -20,7 +20,7 @@ from optparse import OptionParser
 
 def ShiftZpot(V,dd,shift):
     ishift = int(round(shift/dd[2]))
-    print ishift
+    print(ishift)
     V = np.roll(V,ishift,axis=0)
 
     return V
@@ -49,10 +49,10 @@ if sample_type in {'s','px','py','pz','dx2','dy2','dz2','dxy','dxz','dyz'}:
 
 if sample_type==".py":
     #import tip
-    execfile("tip.py")
-    print tipMultipole
+    exec(compile(open("tip.py", "rb").read(), "tip.py", 'exec'))
+    print(tipMultipole)
     sample_type = tipMultipole
-    print " PPU.params['tip'] ", sample_type
+    print(" PPU.params['tip'] ", sample_type)
     rho = None
     multipole = sample_type
 
@@ -82,7 +82,7 @@ if rho is None:
 
     shift = options.shift
     if shift > 0.0:
-        print shift
+        print(shift)
         #ishift = 10
         rho = ShiftZpot(rho,dd,shift)
         #np.roll(rho,ishift,axis=0)
