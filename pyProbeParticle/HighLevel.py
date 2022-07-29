@@ -126,6 +126,13 @@ def computeLJ( geomFile, speciesFile, save_format=None, computeVpot=False, Fmax=
     # --- load species (LJ potential)
     FFparams            = PPU.loadSpecies( speciesFile ) 
     elem_dict           = PPU.getFFdict(FFparams); # print elem_dict
+    bad_list = list(elem_dict)
+    good_list = bad_list
+    value_list = list(elem_dict.values())
+    for i in range(len(bad_list)): ## python 3 is very, very annoying
+        good_list[i] = bad_list[i].decode('utf-8')
+        #elem_dict[good_list[i]] = elem_dict.pop(bad_list[i])
+        elem_dict[good_list[i]] = value_list[i]
     # --- load atomic geometry
     atoms,nDim,lvec     = BU.loadGeometry( geomFile, params=PPU.params )
     #print "DEBUG atoms : ", atoms

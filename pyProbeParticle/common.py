@@ -225,6 +225,8 @@ def loadSpecies( fname=None ):
     if(verbose>0): print(" loadSpecies from ", fname)
     #FFparams=np.genfromtxt(fname,dtype=[('rmin',np.float64),('epsilon',np.float64),('atom',np.int),('symbol', '|S10')],usecols=[0,1,2,3])
     FFparams=np.genfromtxt(fname,dtype=[('rmin',np.float64),('epsilon',np.float64),('alpha',np.float64),('atom',np.int),('symbol', '|S10')],usecols=(0,1,2,3,4))
+    #FFparams=np.genfromtxt(fname,dtype=[('rmin',np.float64),('epsilon',np.float64),('alpha',np.float64),('atom',np.int),('symbol')],usecols=(0,1,2,3,4))
+
     return FFparams 
 
 # load atoms species parameters form a file ( currently used to load Lenard-Jones parameters )

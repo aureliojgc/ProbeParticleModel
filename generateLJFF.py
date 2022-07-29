@@ -11,6 +11,7 @@ import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.fieldFFT       as fFFT
 import pyProbeParticle.GridUtils as GU
 import pyProbeParticle  as PPU     
+import pyProbeParticle.cpp_utils      as cpp_utils
 
 if __name__=="__main__":
     HELP_MSG="""Use this program in the following way:
@@ -36,6 +37,25 @@ if __name__=="__main__":
         print("no params.ini provided => using default params ")
     PPU.apply_options(opt_dict)
     speciesFile = None
+
+    print('hola!!!!')
+    print('hola!!!!')
+    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
+    print(speciesFile)
+    print('hola!!!!')
+    print('hola!!!!')
+
+
     if os.path.isfile( 'atomtypes.ini' ):
         speciesFile='atomtypes.ini'
+    else:
+        speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
+
+    print('hola!!!!')
+    print('hola!!!!')
+    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
+    print(speciesFile)
+    print('hola!!!!')
+    print('hola!!!!')    
+    
     PPH.computeLJ( options.input, speciesFile=speciesFile, save_format=options.data_format, computeVpot=options.energy, ffModel=options.ffModel )
