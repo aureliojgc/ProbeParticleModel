@@ -16,7 +16,7 @@ CoulombConst         = -14.3996448915;
 # default parameters of simulation
 params={
     'PBC': True,
-    'nPBC' :       np.array( [      1,        1,        1 ] ),
+    'nPBC' :       np.array( [      3,        3,        3 ] ),
     'gridN':       np.array( [ -1,     -1,   -1   ] ).astype(np.int),
     'gridA':       np.array( [ 12.798,  -7.3889,  0.00000 ] ),
     'gridB':       np.array( [ 12.798,   7.3889,  0.00000 ] ),
