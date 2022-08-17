@@ -16,7 +16,7 @@ CoulombConst         = -14.3996448915;
 # default parameters of simulation
 params={
     'PBC': True,
-    'nPBC' :       np.array( [      3,        3,        3 ] ),
+    'nPBC' :       np.array( [      3,        3,        1 ] ),
     'gridN':       np.array( [ -1,     -1,   -1   ] ).astype(np.int),
     'gridA':       np.array( [ 12.798,  -7.3889,  0.00000 ] ),
     'gridB':       np.array( [ 12.798,   7.3889,  0.00000 ] ),
@@ -71,7 +71,7 @@ def getDfWeight( n, dz=0.1 ):
     Giessibl, F. J. A direct method to calculate tip-sample forces from frequency shifts in frequency-modulation atomic force microscopy Appl. Phys. Lett. 78, 123 (2001)
     oscialltion amplitude of cantilever is A = n * dz
     '''
-    x  = np.linspace(-1,1,n+1)
+    x  = np.linspace(-1,1,int(n+1))
     y  = np.sqrt(1-x*x)
     dy =  ( y[1:] - y[:-1] )/(dz*n)
     fpi    = (n-2)**2 

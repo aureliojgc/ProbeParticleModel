@@ -13,6 +13,7 @@ import pyProbeParticle.GridUtils as GU
 import pyProbeParticle  as PPU     
 import pyProbeParticle.cpp_utils      as cpp_utils
 
+
 if __name__=="__main__":
     HELP_MSG="""Use this program in the following way:
     %s -i <filename> 
@@ -38,12 +39,10 @@ if __name__=="__main__":
     PPU.apply_options(opt_dict)
     speciesFile = None
 
-    print('hola!!!!')
-    print('hola!!!!')
-    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
-    print(speciesFile)
-    print('hola!!!!')
-    print('hola!!!!')
+
+#    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
+#    print(speciesFile)
+
 
 
     if os.path.isfile( 'atomtypes.ini' ):
@@ -51,11 +50,10 @@ if __name__=="__main__":
     else:
         speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
 
-    print('hola!!!!')
-    print('hola!!!!')
-    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
-    print(speciesFile)
-    print('hola!!!!')
-    print('hola!!!!')    
+#    speciesFile= cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini'
+#    print(speciesFile)
+ 
     
     PPH.computeLJ( options.input, speciesFile=speciesFile, save_format=options.data_format, computeVpot=options.energy, ffModel=options.ffModel )
+
+

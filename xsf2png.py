@@ -43,7 +43,7 @@ if options.atoms:
         FFparams=PPU.loadSpecies( 'atomtypes.ini' ) 
     else:
         FFparams = PPU.loadSpecies( cpp_utils.PACKAGE_PATH+'/defaults/atomtypes.ini' )
-    iZs,Rs,Qstmp=PPH.parseAtoms(atoms, autogeom = False, PBC = True, FFparams=FFparams )
+    iZs,Rs,Qstmp=PPU.parseAtoms(atoms, autogeom = False, PBC = True, FFparams=FFparams )
     atom_colors = basUtils.getAtomColors(iZs,FFparams=FFparams)
     #print atom_colors
     Rs=Rs.transpose().copy()

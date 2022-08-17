@@ -7,6 +7,7 @@ from . import GridUtils as GU
 from . import fieldFFT  as fFFT
 from . import common    as PPU
 from . import basUtils  as BU
+from . import PPPlot    as PPPlot
 
 from . import core
 from . import cpp_utils
