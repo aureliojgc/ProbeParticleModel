@@ -75,21 +75,21 @@ if opt_dict['Laplace']:
 print(" >> OVEWRITING SETTINGS by command line arguments  ")
 # Ks
 if opt_dict['krange'] is not None:
-    Ks = np.linspace( opt_dict['krange'][0], opt_dict['krange'][1], opt_dict['krange'][2] )
+    Ks = np.linspace( opt_dict['krange'][0], opt_dict['krange'][1], int(opt_dict['krange'][2]) )
 elif opt_dict['k'] is not None:
     Ks = [ opt_dict['k'] ]
 else:
     Ks = [ PPU.params['klat'] ]
 # Qs
 if opt_dict['qrange'] is not None:
-    Qs = np.linspace( opt_dict['qrange'][0], opt_dict['qrange'][1], opt_dict['qrange'][2] )
+    Qs = np.linspace( opt_dict['qrange'][0], opt_dict['qrange'][1], int(opt_dict['qrange'][2]) )
 elif opt_dict['q'] is not None:
     Qs = [ opt_dict['q'] ]
 else:
     Qs = [ PPU.params['charge'] ]
 # Amps
 if opt_dict['arange'] is not None:
-    Amps = np.linspace( opt_dict['arange'][0], opt_dict['arange'][1], opt_dict['arange'][2] )
+    Amps = np.linspace( opt_dict['arange'][0], opt_dict['arange'][1], int(opt_dict['arange'][2]) )
 elif opt_dict['a'] is not None:
     Amps = [ opt_dict['a'] ]
 else:
@@ -98,7 +98,7 @@ else:
     #activate the aplied bias
 aplied_bias=False
 if opt_dict['Vrange'] is not None:
-    Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], opt_dict['Vrange'][2] )
+    Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], int(opt_dict['Vrange'][2]) )
 elif opt_dict['Vbias'] is not None:
     Vs = [ opt_dict['Vbias'] ]
 else:

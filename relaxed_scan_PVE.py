@@ -60,7 +60,7 @@ if __name__=="__main__":
 
     # Ks
     if opt_dict['krange'] is not None:
-        Ks = np.linspace( opt_dict['krange'][0], opt_dict['krange'][1], opt_dict['krange'][2] )
+        Ks = np.linspace( opt_dict['krange'][0], opt_dict['krange'][1], int(opt_dict['krange'][2]) )
     elif opt_dict['klat'] is not None:
         Ks = [ opt_dict['klat'] ]
     else:
@@ -68,7 +68,7 @@ if __name__=="__main__":
     # Qs
     charged_system=False
     if opt_dict['qrange'] is not None:
-        Qs = np.linspace( opt_dict['qrange'][0], opt_dict['qrange'][1], opt_dict['qrange'][2] )
+        Qs = np.linspace( opt_dict['qrange'][0], opt_dict['qrange'][1], int(opt_dict['qrange'][2]) )
     elif opt_dict['charge'] is not None:
         Qs = [ opt_dict['charge'] ]
     else:
@@ -79,7 +79,7 @@ if __name__=="__main__":
     # Vkpfm
     aplied_bias=False
     if opt_dict['Vrange'] is not None:
-        Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], opt_dict['Vrange'][2] )
+        Vs = np.linspace( opt_dict['Vrange'][0], opt_dict['Vrange'][1], int(opt_dict['Vrange'][2]) )
     elif opt_dict['Vbias'] is not None:
         Vs = [ opt_dict['Vbias'] ]
     else:
