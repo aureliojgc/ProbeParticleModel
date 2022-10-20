@@ -154,7 +154,7 @@ if opt_dict['easy_KPFM_b']:
         f_kpfm, lvec, nDim = GU.load_scal_field('./OutKPFM_b' , data_format=options.data_format)
     except:
         print("error, canot load kpfm force map")
-    df_kpfm = PPU.Fz2df( f_kpfm, dz = dz, k0 = PPU.params['kCantilever'], f0=PPU.params['f0Cantilever'], n=1.0/dz )
+    df_kpfm = PPU.Fz2df( f_kpfm, dz = dz, k0 = PPU.params['kCantilever'], f0=PPU.params['f0Cantilever'], n=int(Amp/dz) )
     PPPlot.plotImages(
         "./kpfm"+atoms_str+cbar_str, df_kpfm,  slices = list(range( 0, len(df_kpfm))), zs=zTips+PPU.params['Amplitude']/2.0,
         extent=extent,cmap=PPU.params['colorscale_kpfm'], atoms=atoms, bonds=bonds, atomSize=atomSize, cbar=opt_dict['cbar'] 
@@ -219,7 +219,7 @@ for iq,Q in enumerate( Qs ):
                         dirNameAmp = dirname+AmpStr
                         if not os.path.exists( dirNameAmp ):
                             os.makedirs( dirNameAmp )
-                        dfs = PPU.Fz2df( fzs, dz = dz, k0 = PPU.params['kCantilever'], f0=PPU.params['f0Cantilever'], n=Amp/dz )
+                        dfs = PPU.Fz2df( fzs, dz = dz, k0 = PPU.params['kCantilever'], f0=PPU.params['f0Cantilever'], n=int(Amp/dz) )
                         if opt_dict['save_df']:
                             GU.save_scal_field(dirNameAmp+'/df', dfs, lvec,data_format=options.data_format )
                         if opt_dict['df']:
