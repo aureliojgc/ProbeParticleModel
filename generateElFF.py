@@ -12,8 +12,8 @@ import pyProbeParticle.fieldFFT       as fFFT
 import pyProbeParticle.HighLevel      as PPH
 import pyProbeParticle.cpp_utils      as cpp_utils
 import pyProbeParticle.basUtils       as BU
-import pyProbeParticle.kpfmUtils      as kpfmU
-from scipy.optimize import curve_fit
+import pyProbeParticle.kpfmUtils      as kpfmU  #xxxxxxxxxxxxxxxxxxx
+from scipy.optimize import curve_fit        #xxxxxxxxxxxxxxxxxxx
 
 
 if __name__=="__main__":
@@ -34,18 +34,19 @@ if __name__=="__main__":
     parser.add_option("--noPBC", action="store_false",  help="pbc False",dest="PBC", default=None)
     parser.add_option( "-w", "--sigma", action="store", type="float",help="gaussian width for convolution in Electrostatics [Angstroem]", default=None)
     parser.add_option("-f","--data_format" , action="store" , type="string", help="Specify the output format of the vector and scalar field. Supported formats are: xsf,npy", default="xsf")
+    
     parser.add_option("--KPFM_tip", action="store",type="string", help="read tip density under bias")
     parser.add_option("--KPFM_sample", action="store",type="string", help="read sample hartree under bias")
     parser.add_option("--Vref", action="store",type="float", help="Field under the KPFM dens. and Vh was calculated in V/Ang")
     parser.add_option("--z0", action="store",type="float", default=0.0 ,help="heigth of the topmost layer of metallic substrate for E to V conversion (Ang)")
-    parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)
-    parser.add_option("--linEtoV", action="store", type="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)
-    parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )
-    parser.add_option("--tip_sigma", action="store", type="float",  help="adjuts the sigma of the tip", default=0.7)
+    parser.add_option("--Vac", action="store", type="float", help="include a ramp function and a shift in the sample hartree under bias to compensate the introduced by the dft code", default=None)  #xxxxxx
+    parser.add_option("--linEtoV", action="store", type="float",  help="convert E to V via E=linEtoVV/z, if false just E=V/10", default=1.0)  #xxxxxxxx
+    parser.add_option( "--borh", action="store_true", help="the input is in a.u.", default=False )    #xxxxxxxxxxxxxxxxxxx
+    parser.add_option("--tip_sigma", action="store", type="float",  help="adjuts the sigma of the tip", default=0.7)   #xxxxxxxxxxxxxxxxx
     parser.add_option("--correct_core", action="store_true", default=False)
     (options, args) = parser.parse_args()
 
-    tol = 0.3
+    tol = 0.3  #xxxxx   is a tolerance for the vacum correction.... out...
 
     #print "options.tip_dens ", options.tip_dens;  exit() 
 
@@ -105,17 +106,17 @@ if __name__=="__main__":
         if (options.tip_dens.lower().endswith(".xsf")):
             rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.tip_dens )
         elif(options.tip_dens.lower().endswith(".cube")):
-            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False, borh = options.borh )
+            rho_tip, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.tip_dens, hartree=False, borh = options.borh )   #xxxxxxx  I am not including the tips from AIMs since they are not working yet...
 
         if options.Rcore > 0.0:
             print(">>> subtracting core densities from rho_tip ... ")
             #subtractCoreDensities( rho_tip, lvec_tip, fname=options.tip_dens, valElDict=valElDict, Rcore=options.Rcore )
             PPH.subtractCoreDensities( rho_tip, lvec_tip, elems=elems_tip, Rs=Rs_tip, valElDict=valElDict, Rcore=options.Rcore, head=head_tip )
 
-        if options.correct_core:
-            Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=tol )
-            print(Rs_tip,elems_tip)
-            rho_tip = kpfmU.core_correction(rho_tip,lvec_tip,nDim_tip,Rs_tip,elems_tip,tol)
+        if options.correct_core:                                                                  #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.tip_dens, Rcut=tol )        #
+            print(Rs_tip,elems_tip)                                                               # out, still experimental....
+            rho_tip = kpfmU.core_correction(rho_tip,lvec_tip,nDim_tip,Rs_tip,elems_tip,tol)        #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
         PPU.params['tip'] = rho_tip
 
@@ -153,7 +154,7 @@ if __name__=="__main__":
             Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadXSF( options.KPFM_tip )
-            if options.correct_core:
+            if options.correct_core:   #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                 Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=tol )
                 rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,tol)
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
@@ -161,27 +162,29 @@ if __name__=="__main__":
             Vref_t = options.Vref
             rho_tip_v0_aux = rho_tip.copy()
             rho_tip_kpfm, lvec_tip, nDim_tip, head_tip = GU.loadCUBE( options.KPFM_tip, hartree=False, borh = options.borh )
-            if options.correct_core:
+            if options.correct_core:    #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                 Rs_tip,elems_tip = PPH.getAtomsWhichTouchPBCcell( options.KPFM_tip, Rcut=tol )
                 rho_tip_kpfm = kpfmU.core_correction(rho_tip,lvec,nDim,Rs_tip,elems_tip,tol)           
             drho_kpfm = (rho_tip_kpfm - rho_tip_v0_aux)
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}: ##now the modules are negative because I can't turn the forces upside down afterwards as is done with DFT (it introduces an asimetry somehow)
             Vref_t = -0.1
             if ( PPU.params['probeType'] == '8' ):
-                #drho_kpfm={'pz':0.095} # comparing charges, 0.09 * 0.2 looks the same as COAg111
+                #drho_kpfm={'pz':-0.095} # comparing charges, 0.09 * 0.2 looks the same as COAg111
                 #sigma = 0.6
                 #drho_kpfm={'pz':0.125} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 #sigma = 0.7
-                drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
-                sigma = 0.4
+                #drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
+                #sigma = 0.4
+                drho_kpfm={'pz':-0.045} # comparing charges, 0.09 * 0.2 looks the same as COAg111
+                sigma = 0.52
                 print(" Select CO-tip polarization ")
             if ( PPU.params['probeType'] == '47' ):
-                drho_kpfm={'pz':-0.21875} 
-                sigma = 0.7
+                drho_kpfm={'pz':-0.500} 
+                sigma = 0.70
                 print(" Select Ag polarization with decay sigma", sigma)
             if ( PPU.params['probeType'] == '54' ):
-                drho_kpfm={'pz':-0.250}
-                sigma = 0.8
+                drho_kpfm={'pz':-0.275}
+                sigma = 0.67
                 print(" Select Xe-tip polarization")
                         #Calculate ~V terms     
         if options.KPFM_tip in {'fit_hard'}:
@@ -196,7 +199,7 @@ if __name__=="__main__":
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,tip_aux_2,computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=sigma )
 
-        #debug save tippol
+        #debug save tippol              #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx avoid debug stuff
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
             rho, lvec_tip, nDim_tip, tiphead = GU.loadXSF("rhoTip.xsf")
             GU.saveXSF( "Tip_bias_pol.xsf", rho, lvec )
@@ -206,7 +209,7 @@ if __name__=="__main__":
         print("Linear E to V")
         zpos = np.linspace(lvec[0,2]-options.z0,lvec[3,2]-options.z0,nDim[0])
         for i in range(nDim[0]):
-            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref_s)*(zpos[i]+0.1))
+            FFkpfm_t0sV[i,:,:]=options.linEtoV*FFkpfm_t0sV[i,:,:]/((Vref_s)*(zpos[i]+0.1))    #leave linEtoV as 1.0  (quit it, will not exist....)
             FFkpfm_tVs0[i,:,:]=options.linEtoV*FFkpfm_tVs0[i,:,:]/((Vref_t)*(zpos[i]+0.1))        
 
         print(">>> saving electrostatic forcefiled ... ")

@@ -45,6 +45,7 @@ if __name__=="__main__":
     parser.add_option( "--tipspline", action="store", type="string", help="file where spline is stored", default=None )
     parser.add_option( "--rotate", action="store", type="float", help="rotates sampling in xy-plane", default=0.0 )
     parser.add_option( "-f","--data_format" , action="store" , type="string",help="Specify the input/output format of the vector and scalar field. Supported formats are: xsf,npy", default="xsf")
+    
     parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied bias [V]" )
     parser.add_option( "--Vrange",       action="store", type="float", help="Bias range [V]", nargs=3 )
     parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
@@ -142,7 +143,7 @@ if __name__=="__main__":
     print(lvec)
     PPU.lvec2params( lvec )
 
-    if opt_dict['easy_KPFM_b']:
+    if opt_dict['easy_KPFM_b']:   # xxxxxxxxxxxxxxxxxx nope, never, this is old test stuff
         PPU.params['Vbias'] = 0.1
         f_kpfm,PPpos,PPdisp,lvecScan=PPH.perform_relaxation(lvec, FFvdW*0.0, FFel=None, FFpauli=None, FFboltz=None,FFkpfm_t0sV=FFkpfm_t0sV,FFkpfm_tVs0=FFkpfm_tVs0,tipspline=options.tipspline)
         GU.save_scal_field( './OutKPFM_b', f_kpfm, lvecScan, data_format=options.data_format )

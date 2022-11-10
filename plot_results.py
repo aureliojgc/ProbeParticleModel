@@ -39,6 +39,7 @@ parser.add_option( "--qrange", action="store", type="float", help="tip charge ra
 parser.add_option( "-a",       action="store", type="float", help="oscilation amplitude [A]" )
 parser.add_option( "--arange", action="store", type="float", help="oscilation amplitude range (min,max,n) [A]", nargs=3)
 parser.add_option( "--iets",   action="store", type="float", help="mass [a.u.]; bias offset [eV]; peak width [eV] ", nargs=3 )
+
 parser.add_option( "-V","--Vbias",       action="store", type="float", help="Aplied field [eV/Ang]" )
 parser.add_option( "--Vrange",  action="store", type="float", help="set of bias to perform the scan under", nargs=3)
 parser.add_option( "--easy_KPFM_b",  action="store_true", default=False, help="calculate the b map in a fast way with the polariz. part of the El force" )
@@ -149,7 +150,7 @@ cbar_str =""
 if opt_dict['cbar']:
 	cbar_str="_cbar"
 
-if opt_dict['easy_KPFM_b']:
+if opt_dict['easy_KPFM_b']:   # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   nope
     try :
         f_kpfm, lvec, nDim = GU.load_scal_field('./OutKPFM_b' , data_format=options.data_format)
     except:
