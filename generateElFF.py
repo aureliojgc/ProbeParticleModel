@@ -175,8 +175,10 @@ if __name__=="__main__":
                 #sigma = 0.7
                 #drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 #sigma = 0.4
-                drho_kpfm={'pz':-0.045} # comparing charges, 0.09 * 0.2 looks the same as COAg111
+                drho_kpfm={'pz':-0.045} # this was fitting the orbital to the AIMS charge
                 sigma = 0.52
+                #drho_kpfm={'pz':-1.0} # this was fitting the B result
+                #sigma = 0.4
                 print(" Select CO-tip polarization ")
             if ( PPU.params['probeType'] == '47' ):
                 drho_kpfm={'pz':-0.500} 
@@ -198,6 +200,7 @@ if __name__=="__main__":
             tip_aux_2 = PPU.params['tip']
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,tip_aux_2,computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=sigma )
+        del dV_kpfm, V_v0_aux2
 
         #debug save tippol              #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx avoid debug stuff
         if options.KPFM_tip in {'fit', 'dipole', 'pz'}:
@@ -215,6 +218,7 @@ if __name__=="__main__":
         print(">>> saving electrostatic forcefiled ... ")
         GU.save_vec_field('FFkpfm_t0sV',FFkpfm_t0sV,lvec_samp ,data_format=options.data_format, head=head_samp)
         GU.save_vec_field('FFkpfm_tVs0',FFkpfm_tVs0,lvec_samp ,data_format=options.data_format, head=head_samp)
+        del FFkpfm_t0sV, FFkpfm_tVs0
 
 
     print(">>> calculating electrostatic forcefiled with FFT convolution as Eel(R) = Integral( rho_tip(r-R) V_sample(r) ) ... ")
