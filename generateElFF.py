@@ -175,29 +175,32 @@ if __name__=="__main__":
                 #sigma = 0.7
                 #drho_kpfm={'pz':-0.180} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
                 #sigma = 0.4
-                drho_kpfm={'pz':-0.045} # this was fitting the orbital to the AIMS charge
+                #drho_kpfm={'pz':-0.045} # this was fitting the orbital to the AIMS charge
+                #sigma = 0.52
+                drho_kpfm={'pz':-0.01} # this is 0.045 * 0.2 so it no longer depends on the charge
                 sigma = 0.52
                 #drho_kpfm={'pz':-1.0} # this was fitting the B result
                 #sigma = 0.4
                 print(" Select CO-tip polarization ")
             if ( PPU.params['probeType'] == '47' ):
-                drho_kpfm={'pz':-0.500} 
+                #drho_kpfm={'pz':-0.500} 
+                #sigma = 0.70
+                drho_kpfm={'pz':-0.050} # this is 0.5 * 0.1 so it no longer depends on the charge
                 sigma = 0.70
                 print(" Select Ag polarization with decay sigma", sigma)
             if ( PPU.params['probeType'] == '54' ):
-                drho_kpfm={'pz':-0.275}
+                #drho_kpfm={'pz':-0.275}
+                #sigma = 0.67
+                drho_kpfm={'pz':-0.0275} # this is 0.275 * 0.1 so it no longer depends on the charge
                 sigma = 0.67
                 print(" Select Xe-tip polarization")
                         #Calculate ~V terms     
-        if options.KPFM_tip in {'fit_hard'}:
-            Vref_t = -0.1
-            if ( PPU.params['probeType'] == '8' ):
-                drho_kpfm={'pz':-1.0} # compared with DFT VASP 0.015. As VASP goes with q=-1.0 and dz2 goes with -0.2 -> 5*0.015. COAg tip is over 0.025, so 0.125
-                sigma = 0.4
         if options.tip_dens is not None:
             tip_aux_2 = PPU.params['tip'].copy()
         else:
-            tip_aux_2 = PPU.params['tip']
+            #tip_aux_2 = PPU.params['tip']
+            tip_aux_2 = {PPU.params['tip']:0.18}
+            print(tip_aux_2)
         FFkpfm_t0sV,Eel_t0sV=PPH.computeElFF(dV_kpfm,lvec,nDim,tip_aux_2,computeVpot=options.energy , tilt=opt_dict['tilt'] ,)
         FFkpfm_tVs0,Eel_tVs0=PPH.computeElFF(V_v0_aux2,lvec,nDim,drho_kpfm,computeVpot=options.energy , tilt=opt_dict['tilt'], sigma=sigma )
         del dV_kpfm, V_v0_aux2
